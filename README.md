@@ -15,10 +15,10 @@
 | LEI | 123572 | Nelssy Pina |
 | LEI | 129329 | Luís de Sousa |
 
-> A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
+
 
 ---
-
+> A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
 ## 📖 Table of Contents
 - [Project Overview](#-project-overview)
 - [Key Features](#-key-features)
