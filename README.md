@@ -14,7 +14,7 @@
 | LEI | 113044 | Simão Espanha |
 | LEI | 123572 | Nelssy Pina |
 | LEI | 129329 | Luís de Sousa |
-
+Obs.: O Membro Simão Espanha tem duas contas diferentes com contribuições neste projeto: O User @ssespa99 e o User @LEI-113044.
 
 
 ---
