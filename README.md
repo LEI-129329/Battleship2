@@ -161,3 +161,58 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
+
+# Prompt LLM para jogar melhor
+
+Considere agora a seguinte tática de geração de rajadas de tiros.
+
+## 📓 1. Diário de Bordo
+Manter um registo sequencial (Rajada 1, 2, 3...) com:
+
+Coordenadas exatas de cada tiro
+
+Respetivo resultado (Água, Nau atingida, Barca afundada, etc.)
+
+"A memória é a principal arma de um bom estratega."
+
+## 🎯 2. Regras de Tiro
+Nunca disparar fora dos limites do mapa (A–J, 1–10).
+
+Nunca repetir coordenadas já testadas.
+
+Exceção: na última rajada do jogo, é permitido repetir tiros apenas para perfazer os 3 tiros obrigatórios, quando a frota inimiga já estiver irremediavelmente afundada.
+
+## ♟️ 3. Abertura em Padrão Xadrez
+Disparar apenas em casas onde (linha + coluna) é par — ex.: B2, D4, F6, H8, J10.
+
+Garante que qualquer navio de comprimento ≥ 2 é detetado com metade dos tiros.
+
+Cobre o tabuleiro 10x10 em ~50 tiros em vez de 100, maximizando a eficiência.
+
+Escolher tiros bem espaçados entre si (cantos + centro) para diversificar a informação recolhida.
+
+## 🔥 4. Após Acerto — Caça Direcionada
+Disparar nas posições contíguas pela ordem fixa: Norte → Sul → Este → Oeste, para descobrir a orientação da embarcação.
+
+Assim que 2 acertos consecutivos revelarem a orientação (horizontal/vertical), varrer nessa direção até afundar.
+
+Se a rajada anterior confirmar que o navio já foi afundado, parar de disparar para as contíguas — os navios nunca estão encostados.
+
+## 🚫 5. Evitar Diagonais de Acertos
+Caravelas, Naus e Fragatas são linhas retas: um tiro certeiro significa que o resto do navio está na horizontal ou vertical.
+
+Como os navios não se tocam (nem nos cantos), as posições diagonais a um tiro certeiro são garantidamente água.
+
+Única exceção: o corpo do Galeão (forma em T). Ter em mente ao evitar diagonais.
+
+## ⭕ 6. Halo Obrigatório Após Afundar
+Quando o relatório confirmar um navio afundado (ex.: Fragata de 4 posições), analisar o Diário de Bordo para identificar exatamente onde caíram esses tiros.
+
+Confirmada a posição exata da carcaça, marcar todas as quadrículas adjacentes (halo de 1 posição em redor do navio) como água intransitável.
+
+É impossível haver outra embarcação nesse perímetro.
+
+## 🧭 7. Priorização de Zonas
+Dar prioridade a zonas com mais espaço livre para barcos grandes (Fragata, Galeão).
+
+Evitar concentrar tiros em áreas já muito testadas.
