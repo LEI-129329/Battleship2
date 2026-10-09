@@ -4,6 +4,17 @@
 ![Java Version](https://img.shields.io/badge/Java-17%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## GrupoTP05_LEI-1
+
+### Membros
+
+| Curso | Número | Nome |
+| :--- | :--- | :--- |
+| LEI | 101283 | André Durães |
+| LEI | 113044 | Simão Espanha |
+| LEI | 123572 | Nelssy Pina |
+| LEI | 129329 | Luís de Sousa |
+
 > A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
 
 ---
