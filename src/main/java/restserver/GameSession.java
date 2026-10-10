@@ -4,6 +4,9 @@ import battleship.Fleet;
 import battleship.Game;
 import battleship.IGame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Holds all state for one active game between the AI opponent and a student player.
  *
@@ -73,5 +76,16 @@ public class GameSession {
 	public void markStudentWins() {
 		this.gameOver = true;
 		this.winner   = "STUDENT_WINS";
+	}
+
+	//Secção adicionada para impressão em pdf
+	private final List<String> moveHistory = new ArrayList<>();
+
+	public void addMoveRecord(String record) {
+		moveHistory.add(record);
+	}
+
+	public List<String> getMoveHistory() {
+		return moveHistory;
 	}
 }
