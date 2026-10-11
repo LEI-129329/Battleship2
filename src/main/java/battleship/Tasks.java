@@ -68,6 +68,18 @@ public class Tasks {
 					break;
 				case RAJADA:
 					if (game != null) {
+
+						// Medir o tempo desde a última rajada (ANTES de disparar,
+						// porque o timestamp da última é atualizado dentro do fireShots)
+						if (game instanceof Game concreteGame) {
+							long lastTime = concreteGame.getLastSalvoTimeMs();
+							if (lastTime > 0) {
+								long intervalMs = System.currentTimeMillis() - lastTime;
+								System.out.printf("(Passaram %.2fs desde a última rajada)%n",
+										intervalMs / 1000.0);
+							}
+						}
+
 						game.readEnemyFire(in);
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
@@ -101,9 +113,9 @@ public class Tasks {
 					if (game != null)
 						game.printMyBoard(true, true);
 					break;
-                case AJUDA:
-                    menuHelp();
-                    break;
+				case AJUDA:
+					menuHelp();
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}

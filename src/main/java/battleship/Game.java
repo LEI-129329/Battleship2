@@ -170,6 +170,16 @@ public class Game implements IGame
 	private int moveNumber;
 
 	//------------------------------------------------------------------
+	// Medição de tempo entre rajadas do utilizador
+	//------------------------------------------------------------------
+
+	/**
+	 * Timestamp (ms) da última rajada disparada.
+	 * O valor 0 significa que ainda não houve nenhuma rajada.
+	 */
+	private long lastSalvoTimeMs = 0;
+
+	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
@@ -208,6 +218,24 @@ public class Game implements IGame
 	public List<IMove> getAlienMoves()
 	{
 		return alienMoves;
+	}
+
+	/**
+	 * Regista o momento atual como sendo o da última rajada disparada.
+	 * Deve ser chamado imediatamente após uma rajada ser processada.
+	 */
+	private void recordSalvoTime() {
+		lastSalvoTimeMs = System.currentTimeMillis();
+	}
+
+	/**
+	 * Devolve o timestamp (em milissegundos) da última rajada disparada,
+	 * ou 0 se ainda não houve nenhuma rajada.
+	 *
+	 * @return o timestamp da última rajada em ms, ou 0
+	 */
+	public long getLastSalvoTimeMs() {
+		return lastSalvoTimeMs;
 	}
 
 	/**
@@ -355,6 +383,9 @@ public class Game implements IGame
 		alienMoves.add(move);
 
 		moveNumber++;
+
+		// Registar o momento desta rajada para medir o intervalo até à próxima
+		recordSalvoTime();
 	}
 
 	/**
@@ -447,9 +478,9 @@ public class Game implements IGame
 	}
 
 	public void over() {
-			System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
 	}
 }
