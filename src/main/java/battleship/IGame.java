@@ -19,6 +19,14 @@ public interface IGame
 	String randomEnemyFire();
 
 	/**
+	 * Calculates the probability that the next random burst hits at least one
+	 * ship that is still floating.
+	 *
+	 * @return a probability between 0.0 and 1.0
+	 */
+	double getProbabilityOfHitInNextRandomBurst();
+
+	/**
 	 * Reads the result of an enemy firing action from input and interprets it.
 	 *
 	 * @param in the {@code Scanner} to read the input from, which provides the details of the enemy fire

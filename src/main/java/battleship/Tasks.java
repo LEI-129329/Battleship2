@@ -87,6 +87,8 @@ public class Tasks {
 				case SIMULA:
 					if (game != null) {
 						while (game.getRemainingShips() > 0){
+							System.out.printf("Probabilidade de acertar pelo menos um navio nesta rajada: %.1f%%%n",
+									game.getProbabilityOfHitInNextRandomBurst() * 100);
 							game.randomEnemyFire();
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
