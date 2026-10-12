@@ -22,7 +22,6 @@ public class GameController {
 	private final GameRegistry registry;
 	private final CallbackClient callbackClient;
 	private final AiShotStrategy aiStrategy;
-
 	public GameController(GameRegistry registry,
 						  CallbackClient callbackClient,
 						  AiShotStrategy aiStrategy) {
@@ -87,7 +86,7 @@ public class GameController {
 	 * @return         { results, shipsRemaining, gameStatus, winner }
 	 */
 	@PostMapping("/game/{gameId}/shots")
-	public ResponseEntity<?> receiveShots(@PathVariable String gameId,
+	public ResponseEntity<?> receiveShots(@PathVariable("gameId") String gameId,
 										  @RequestBody ShotRequest request) {
 
 		// ── 1. Lookup session ────────────────────────────────────────────────
@@ -121,6 +120,7 @@ public class GameController {
 
 		// ── 5. Check if student won (all AI ships sunk) ──────────────────────
 		if (game.getRemainingShips() == 0) {
+			PdfReportGenerator.generateReport(session, "target/relatorio-" + session.getGameId() + ".pdf");
 			session.markStudentWins();
 			m1bResponse.gameStatus = "GAME_OVER";
 			m1bResponse.winner     = "STUDENT_WINS";
@@ -179,6 +179,8 @@ public class GameController {
 				dto.outcome  = "HIT";
 				dto.shipType = sr.ship().getCategory();
 			}
+			String moveDescription = String.format("Tiro em %s%d: %s", dto.row, dto.column, dto.outcome);
+			session.addMoveRecord(moveDescription);
 			results.add(dto);
 		}
 
@@ -193,5 +195,22 @@ public class GameController {
 	/** Convenience helper to build a JSON error response. */
 	private ResponseEntity<ErrorResponse> error(HttpStatus status, String message) {
 		return ResponseEntity.status(status).body(new ErrorResponse(message));
+	}
+
+	//função de teste para impressão PDF qur força a vitória ao jogador
+	@PostMapping("/game/{gameId}/win")
+	public ResponseEntity<?> forceWin(@PathVariable("gameId") String gameId) {
+		GameSession session = registry.getSession(gameId);
+		if (session == null) {
+			return error(HttpStatus.NOT_FOUND, "Game not found: " + gameId);
+		}
+
+		// Força o estado de vitória do estudante
+		session.markStudentWins();
+
+		// Se já tiver integrado a geração do PDF, pode chamá-la aqui também:
+		PdfReportGenerator.generateReport(session, "target/relatorio-" + gameId + ".pdf");
+
+		return ResponseEntity.ok("Vitória forçada com sucesso para o jogo " + gameId);
 	}
 }
