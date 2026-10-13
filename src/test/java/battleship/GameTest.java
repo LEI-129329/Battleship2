@@ -100,4 +100,11 @@ public class GameTest {
 		assertEquals(1, game.getRemainingShips(), "Remaining ships count should be 1 after sinking one of two ships.");
 	}
 
+	@Test
+	void probabilityOfHitInNextRandomBurst() {
+		game.getMyFleet().addShip(new Barge(Compass.NORTH, new Position(5, 5)));
+
+		assertEquals(0.03, game.getProbabilityOfHitInNextRandomBurst(), 1e-12);
+	}
+
 }
