@@ -383,7 +383,6 @@ public class Game implements IGame
 		alienMoves.add(move);
 
 		moveNumber++;
-
 		// Registar o momento desta rajada para medir o intervalo até à próxima
 		recordSalvoTime();
 	}
@@ -478,9 +477,9 @@ public class Game implements IGame
 	}
 
 	public void over() {
-		System.out.println();
-		System.out.println("+--------------------------------------------------------------+");
-		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-		System.out.println("+--------------------------------------------------------------+");
+			System.out.println();
+			System.out.println("+--------------------------------------------------------------+");
+			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+			System.out.println("+--------------------------------------------------------------+");
 	}
 }
