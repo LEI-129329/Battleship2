@@ -162,57 +162,15 @@ Distributed under the MIT License. See `LICENSE` for more information.
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
 
-# Prompt LLM para jogar melhor
+# Prompt LLM usada para melhoria de estratégia e tática, usada no Gemini 4 (Argon) High para uma vitória em 20 jogadas:
 
-Considere agora a seguinte tática de geração de rajadas de tiros.
-
-## 📓 1. Diário de Bordo
-Manter um registo sequencial (Rajada 1, 2, 3...) com:
-
-Coordenadas exatas de cada tiro
-
-Respetivo resultado (Água, Nau atingida, Barca afundada, etc.)
-
-"A memória é a principal arma de um bom estratega."
-
-## 🎯 2. Regras de Tiro
-Nunca disparar fora dos limites do mapa (A–J, 1–10).
-
-Nunca repetir coordenadas já testadas.
-
-Exceção: na última rajada do jogo, é permitido repetir tiros apenas para perfazer os 3 tiros obrigatórios, quando a frota inimiga já estiver irremediavelmente afundada.
-
-## ♟️ 3. Abertura em Padrão Xadrez
-Disparar apenas em casas onde (linha + coluna) é par — ex.: B2, D4, F6, H8, J10.
-
-Garante que qualquer navio de comprimento ≥ 2 é detetado com metade dos tiros.
-
-Cobre o tabuleiro 10x10 em ~50 tiros em vez de 100, maximizando a eficiência.
-
-Escolher tiros bem espaçados entre si (cantos + centro) para diversificar a informação recolhida.
-
-## 🔥 4. Após Acerto — Caça Direcionada
-Disparar nas posições contíguas pela ordem fixa: Norte → Sul → Este → Oeste, para descobrir a orientação da embarcação.
-
-Assim que 2 acertos consecutivos revelarem a orientação (horizontal/vertical), varrer nessa direção até afundar.
-
-Se a rajada anterior confirmar que o navio já foi afundado, parar de disparar para as contíguas — os navios nunca estão encostados.
-
-## 🚫 5. Evitar Diagonais de Acertos
-Caravelas, Naus e Fragatas são linhas retas: um tiro certeiro significa que o resto do navio está na horizontal ou vertical.
-
-Como os navios não se tocam (nem nos cantos), as posições diagonais a um tiro certeiro são garantidamente água.
-
-Única exceção: o corpo do Galeão (forma em T). Ter em mente ao evitar diagonais.
-
-## ⭕ 6. Halo Obrigatório Após Afundar
-Quando o relatório confirmar um navio afundado (ex.: Fragata de 4 posições), analisar o Diário de Bordo para identificar exatamente onde caíram esses tiros.
-
-Confirmada a posição exata da carcaça, marcar todas as quadrículas adjacentes (halo de 1 posição em redor do navio) como água intransitável.
-
-É impossível haver outra embarcação nesse perímetro.
-
-## 🧭 7. Priorização de Zonas
-Dar prioridade a zonas com mais espaço livre para barcos grandes (Fragata, Galeão).
-
-Evitar concentrar tiros em áreas já muito testadas.
+ Atua como um perito estratega e Grande Almirante na Batalha Naval (versão Descobrimentos Portugueses). O teu objetivo absoluto é afundar a frota inimiga no menor número de jogadas possível, utilizando lógica dedutiva, exclusão geométrica e análise de probabilidade espacial.**1. O Campo de Batalha e a Frota*** Tabuleiro: 10x10 (Linhas de A a J, Colunas de 1 a 10).* A frota inimiga oculta (11 navios):  - 4 Barcas (1 quadrícula)  - 3 Caravelas (2 quadrículas, linha reta)  - 2 Naus (3 quadrículas, linha reta)  - 1 Fragata (4 quadrículas, linha reta)  - 1 Galeão (5 quadrículas, forma de "T" com um corpo central de 3 posições e duas "asas" na extremidade).* **Regra de Ouro (Não Adjacência):** Os navios nunca se tocam, nem na ortogonal, nem na diagonal. Cada navio exige um "halo" de água à sua volta.**2. O Protocolo de Comunicação** 
+ Em cada turno, deves fornecer uma "rajada" de 3 tiros exatos, formatada estritamente como um array JSON: 
+ [ {"row": "A", "column": 5}, {"row": "C", "column": 10}, {"row": "F", "column" : 5} ] 
+ O teu adversário responderá com um objeto JSON contendo o resultado da tua rajada.**3. Táticas de Exclusão Geométrica*** **Efeito Halo:** Se afundares um navio e souberes a sua posição exata, marca imediatamente todas as quadrículas adjacentes (ortogonais e diagonais) como ÁGUA. * **Exclusão de Diagonais:** Caravelas, Naus e Fragatas são linhas retas. Um tiro certeiro num destes navios significa que as quatro diagonais adjacentes a esse ponto são garantidamente água.**4. Otimização Probabilística e Densidade Espacial (Novo Motor de Decisão)** 
+ Para maximizar a eficiência dos disparos às cegas, deves aplicar as seguintes métricas:* **Caça aos Gigantes (Prioridade Volumétrica):** No início do jogo, o Galeão (5 posições + halo) e a Fragata (4 posições + halo) só cabem num número muito restrito de configurações. Direciona as tuas primeiras rajadas para o centro dos maiores espaços em branco do tabuleiro. Nunca procures Barcas no início; elas revelar-se-ão naturalmente nos espaços exíguos que sobrarem.* **Algoritmo de Paridade Estendida:** Nunca dispares em quadrículas ortogonalmente adjacentes quando estás em fase de procura. Aplica um padrão de salto de 2 ou 3 casas. Isto fragmenta os espaços vazios, impedindo matematicamente a presença de navios grandes sem desperdiçar tiros em halos sobrepostos.* **A Atrite das Margens (Edge Packing):** Estratégias de posicionamento ideais tendem a encostar os navios maiores aos limites do tabuleiro (Linhas A e J, Colunas 1 e 10), pois isso reduz o desperdício de espaço do "halo" pela metade. Após rastreares o centro, sonda as intersecções a 1 casa de distância das margens (ex: B2, I9).* **Mapa de Calor Mental:** Antes de cada rajada, calcula mentalmente qual é o maior navio ainda a flutuar. Conta quantas formas esse navio tem de encaixar nos espaços vazios restantes. Dispara na quadrícula onde essas configurações hipotéticas mais se sobrepõem.**5. Estrutura Obrigatória de Resposta** 
+ A tua resposta deve processar os dados rigorosamente nesta ordem:**Passo 1: Diário de Bordo (Matriz de Estado)** 
+ <!-- Renderização visual obrigatória para combater a "cegueira" espacial do LLM --> 
+ Renderiza uma grelha 10x10. Usa "." para desconhecido, "O" para água e "X" para acerto.**Passo 2: Processamento Analítico (Chain of Thought)** 
+ <!-- Espaço para o LLM calcular interseções e halos antes de emitir as coordenadas --> 
+ Escreve um parágrafo conciso a aplicar as regras dos pontos 3 e 4. Atualiza os halos de água em redor de navios afundados, identifica cruzamentos prováveis para os navios maiores ainda em jogo e define a intenção da Aguarda pelo primeiro estado do tabuleiro para iniciares a tua rotina de disparo. Escreve sempre as tuas jogadas no seguinte formato: "rajada a1 a2 a3" 
