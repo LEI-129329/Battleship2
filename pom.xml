@@ -67,11 +67,11 @@
 		<maven.surefire.version>3.1.2</maven.surefire.version>
 		<maven.shade.version>3.5.0</maven.shade.version>
 
-		<apache.log4j.version>2.25.4</apache.log4j.version>
+		<apache.log4j.version>2.24.3</apache.log4j.version>
 
 		<jackson.version>2.18.11</jackson.version>
 
-		<allure.version>2.31.0</allure.version>
+		<allure.version>2.29.1</allure.version>
 
 		<jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
 	</properties>
@@ -122,8 +122,9 @@
 
 		<dependency>
 			<groupId>io.qameta.allure</groupId>
-			<artifactId>allure-java-commons-test</artifactId>
+			<artifactId>allure-java-commons</artifactId>
 			<version>${allure.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Source: https://mvnrepository.com/artifact/org.jetbrains/annotations -->
@@ -148,6 +149,11 @@
 			<version>21.0.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -159,6 +165,9 @@
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 
