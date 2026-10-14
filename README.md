@@ -16,6 +16,7 @@
 | LEI | 129329 | Luís de Sousa |
 
 Obs.: O Membro Simão Espanha tem duas contas diferentes com contribuições neste projeto: O User @ssespa99 e o User @LEI-113044.
+O Membro Luís de Sousa, para além da conta @LEI-129329, também usou, por lapso, a conta pessoal @luisdesousa79 para contribuir para o projeto.
 
 
 ---
