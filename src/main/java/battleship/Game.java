@@ -3,6 +3,7 @@ package battleship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
 import java.util.*;
 
@@ -252,15 +253,7 @@ public class Game implements IGame
 		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
-		Set<IPosition> usablePositions = new HashSet<IPosition>();
-		for (int r = 0; r < BOARD_SIZE; r++)
-			for (int c = 0; c < BOARD_SIZE; c++)
-				usablePositions.add(new Position(r, c));
-
-		this.myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		this.alienMoves.forEach(move ->  usablePositions.removeAll(move.getShots()));
-
-		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
+		List<IPosition> candidateShots = getCandidateShots();
 
 		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<IPosition>();
@@ -293,6 +286,36 @@ public class Game implements IGame
 		this.fireShots(shots);
 
 		return Game.jsonShots(shots);
+	}
+
+	@Override
+	public double getProbabilityOfHitInNextRandomBurst() {
+		List<IPosition> candidateShots = getCandidateShots();
+		int populationSize = candidateShots.size();
+		int hitPositions = 0;
+
+		for (IPosition position : candidateShots) {
+			IShip ship = myFleet.shipAt(position);
+			if (ship != null && ship.stillFloating())
+				hitPositions++;
+		}
+
+		int sampleSize = Math.min(NUMBER_SHOTS, populationSize);
+		HypergeometricDistribution distribution =
+				new HypergeometricDistribution(populationSize, hitPositions, sampleSize);
+		return 1.0 - distribution.probability(0);
+	}
+
+	private List<IPosition> getCandidateShots() {
+		Set<IPosition> usablePositions = new HashSet<>();
+		for (int row = 0; row < BOARD_SIZE; row++)
+			for (int column = 0; column < BOARD_SIZE; column++)
+				usablePositions.add(new Position(row, column));
+
+		myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
+		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots()));
+
+		return new ArrayList<>(usablePositions);
 	}
 
 
