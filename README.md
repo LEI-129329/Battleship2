@@ -7,15 +7,15 @@
 ## GrupoTP05_LEI-1
 
 ### Links de vídeos YouTube das funcionalidades e jogo IA:
-Funcionalidade André - https://youtu.be/qYMruEpBjjg
+[Funcionalidade André](https://youtu.be/qYMruEpBjjg)
 
-Funcionalidade Luís - ____________________________
+[Funcionalidade Luís](https://youtu.be/hR8p4aSHHYs)
 
-Funcionalidade Nelssy - https://youtu.be/T-9Y0laV0vQ
+[Funcionalidade Nelssy](https://youtu.be/T-9Y0laV0vQ)
 
-Funcionalidade Simão - https://youtu.be/byfwveS13OM
+[Funcionalidade Simão](https://youtu.be/j2nKN1okpEI)
 
-Jogo IA - https://youtu.be/qA3qTb-eyAY
+[Jogo IA](https://youtu.be/qA3qTb-eyAY)
 
 ### Membros
 
