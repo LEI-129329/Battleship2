@@ -1,0 +1,29 @@
+# 123572 - Nelssy Pina
+
+name: Qodana smell gate 123572
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
+jobs:
+  qodana:
+    name: Qodana analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Qodana Scan
+        uses: JetBrains/qodana-action@v2026.2.2
+
