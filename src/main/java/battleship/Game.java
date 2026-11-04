@@ -505,4 +505,8 @@ public class Game implements IGame
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
 	}
+
+	public void metodoComDemasiadosParametros(String p1, int p2, boolean p3, double p4, char p5, String p6) {
+    // Método de teste para o Quality Gate
+	}
 }
