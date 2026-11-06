@@ -1,7 +1,7 @@
 # 113044
 profile:
   base:
-    name: empty
+    name: disabled
   inspections:
     - inspection: FeatureEnvy
       enabled: true
