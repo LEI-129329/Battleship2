@@ -24,7 +24,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: checkstyle/checkstyle-123572.xml
-          checkstyle_version: "10.21.2"
           reporter: github-pr-check
           level: error
           filter_mode: nofilter
