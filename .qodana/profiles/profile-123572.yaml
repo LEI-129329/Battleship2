@@ -6,21 +6,17 @@ profile:
     name: empty
 
   inspections:
-
-    # 1. Deteção de métodos demasiado longos
-    - inspection: OverlyLongMethod
+    - inspection: NonCommentSourceStatements
       enabled: true
       options:
         m_limit: 65
 
-    # 2. Deteção de métodos demasiado complexos
-    - inspection: OverlyComplexMethod
+    - inspection: CyclomaticComplexity
       enabled: true
       options:
         m_limit: 3
 
-    # 3. Deteção de métodos demasiado aninhados
-    - inspection: OverlyNestedMethod
+    - inspection: NestingDepth
       enabled: true
       options:
         m_limit: 2
