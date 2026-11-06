@@ -1,0 +1,31 @@
+
+name: Checkstyle Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  checkstyle:
+    name: Checkstyle Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: Checkstyle/checkstyle-123572.xml
+          checkstyle_version: "14.4.0"
+          reporter: github-pr-check
+          level: error
+          filter_mode: nofilter
+          fail_level: error
