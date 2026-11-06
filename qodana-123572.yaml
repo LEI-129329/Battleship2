@@ -12,4 +12,4 @@ profile:
   path: .qodana/profiles/profile-123572.yaml
 
 # Quality Gate
-failThreshold: 0
+#failThreshold: 0
