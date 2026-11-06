@@ -4,7 +4,6 @@ version: "1.0"
 profile:
   base:
     name: empty
-
   inspections:
 
     # 1. Deteção de métodos demasiado longos
