@@ -510,7 +510,7 @@ public class Game implements IGame
     // Método de teste para o Quality Gate
 	}
 
-	public void TestarCheckystlee() {
+	public void TestarCheckystle() {
 		System.out.println("Teste do Checkstyle");
 	}
 }
