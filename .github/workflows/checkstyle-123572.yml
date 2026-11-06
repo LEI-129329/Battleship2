@@ -1,5 +1,5 @@
 
-name: Checkstyle Quality Gate
+name: Checkstyle Quality Gate 123572
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: Checkstyle/checkstyle-123572.xml
-          checkstyle_version: "14.4.0"
+          checkstyle_version: "10.21.2"
           reporter: github-pr-check
           level: error
           filter_mode: nofilter
