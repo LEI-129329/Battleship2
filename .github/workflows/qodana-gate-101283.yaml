@@ -1,27 +1,31 @@
 # 101283 - André Durães
-name: Qodana Quality Gate 101283
+
+name: Qodana smell gate 101283
 
 on:
   pull_request:
   push:
-    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
 
 jobs:
   qodana:
+    name: Qodana analysis
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: write
+
     steps:
-      - uses: JetBrains/qodana-action@v2024.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2025.1
+        uses: JetBrains/qodana-action@v2026.2.2
         with:
-          args: --config,qodana.yaml
-          use-annotations: true
-          post-pr-comment: true
+          upload-result: true
+          args: --config qodana-101283.yaml
