@@ -453,13 +453,8 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 	}
 
-	//código feito para FeatureEnvy
-	public void calcularEstatisticasInimigo(Ship ship) {
-		// Violação deliberada de Feature Envy: acede repetidamente aos dados de 'ship'
-		// sem utilizar os dados da classe atual onde o método está inserido.
-		int totalTiros = ship.getHits() + ship.getMisses();
-		int navioTamanho = ship.getSize();
-		boolean estaAfundado = ship.isSunk();
-		System.out.println("Tiros: " + totalTiros + ", Tamanho: " + navioTamanho + ", Afundado: " + estaAfundado);
+	//código feito para corrigir FeatureEnvy
+	public void processar(Ship ship) {
+		ship.calcularEstatisticas(); // O método agora pertence a quem tem os dados!
 	}
 }
