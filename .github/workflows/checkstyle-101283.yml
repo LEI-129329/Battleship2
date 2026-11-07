@@ -1,3 +1,4 @@
+# 101283 - André Durães
 name: Checkstyle Constant Gate 101283
 
 on:
@@ -7,11 +8,17 @@ on:
 jobs:
   checkstyle:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: dbelyaev/action-checkstyle@master
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-check
-          checkstyle_config: checkstyle/checkstyle-101283.xml
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run Checkstyle with Maven
+        run: |
+          mvn checkstyle:check -Dcheckstyle.config.location=checkstyle/checkstyle-101283.xml
