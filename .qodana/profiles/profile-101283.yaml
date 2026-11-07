@@ -1,0 +1,9 @@
+# 101283 - André Durães
+name: Long Parameter List Gate
+base:
+  name: empty
+inspections:
+  - inspection: MethodWithTooManyParameters
+    enabled: true
+    options:
+      limit: 5  # Limite máximo de parâmetros permitido

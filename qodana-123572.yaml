@@ -1,0 +1,15 @@
+# 123572 - Nelssy Pina
+version: "1.0"
+
+# Linter utilizado
+linter: jetbrains/qodana-jvm-community:2026.2
+
+# Versão do JDK do projeto
+projectJDK: 21
+
+# Perfil de inspeção personalizado
+profile:
+  path: .qodana/profiles/profile-123572.yaml
+
+# Quality Gate
+#failThreshold: 0

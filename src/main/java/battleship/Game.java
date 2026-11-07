@@ -3,6 +3,7 @@ package battleship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
 import java.util.*;
 
@@ -170,6 +171,16 @@ public class Game implements IGame
 	private int moveNumber;
 
 	//------------------------------------------------------------------
+	// Medição de tempo entre rajadas do utilizador
+	//------------------------------------------------------------------
+
+	/**
+	 * Timestamp (ms) da última rajada disparada.
+	 * O valor 0 significa que ainda não houve nenhuma rajada.
+	 */
+	private long lastSalvoTimeMs = 0;
+
+	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
@@ -211,6 +222,24 @@ public class Game implements IGame
 	}
 
 	/**
+	 * Regista o momento atual como sendo o da última rajada disparada.
+	 * Deve ser chamado imediatamente após uma rajada ser processada.
+	 */
+	private void recordSalvoTime() {
+		lastSalvoTimeMs = System.currentTimeMillis();
+	}
+
+	/**
+	 * Devolve o timestamp (em milissegundos) da última rajada disparada,
+	 * ou 0 se ainda não houve nenhuma rajada.
+	 *
+	 * @return o timestamp da última rajada em ms, ou 0
+	 */
+	public long getLastSalvoTimeMs() {
+		return lastSalvoTimeMs;
+	}
+
+	/**
 	 * Simulates a random firing action by the enemy, generating a set of unique shot coordinates
 	 * and serializing them into a JSON string. The method ensures that the random shots are valid
 	 * and do not duplicate existing shots in the game or previous enemy moves. After generating
@@ -224,15 +253,7 @@ public class Game implements IGame
 		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
-		Set<IPosition> usablePositions = new HashSet<IPosition>();
-		for (int r = 0; r < BOARD_SIZE; r++)
-			for (int c = 0; c < BOARD_SIZE; c++)
-				usablePositions.add(new Position(r, c));
-
-		this.myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		this.alienMoves.forEach(move ->  usablePositions.removeAll(move.getShots()));
-
-		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
+		List<IPosition> candidateShots = getCandidateShots();
 
 		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<IPosition>();
@@ -265,6 +286,36 @@ public class Game implements IGame
 		this.fireShots(shots);
 
 		return Game.jsonShots(shots);
+	}
+
+	@Override
+	public double getProbabilityOfHitInNextRandomBurst() {
+		List<IPosition> candidateShots = getCandidateShots();
+		int populationSize = candidateShots.size();
+		int hitPositions = 0;
+
+		for (IPosition position : candidateShots) {
+			IShip ship = myFleet.shipAt(position);
+			if (ship != null && ship.stillFloating())
+				hitPositions++;
+		}
+
+		int sampleSize = Math.min(NUMBER_SHOTS, populationSize);
+		HypergeometricDistribution distribution =
+				new HypergeometricDistribution(populationSize, hitPositions, sampleSize);
+		return 1.0 - distribution.probability(0);
+	}
+
+	private List<IPosition> getCandidateShots() {
+		Set<IPosition> usablePositions = new HashSet<>();
+		for (int row = 0; row < BOARD_SIZE; row++)
+			for (int column = 0; column < BOARD_SIZE; column++)
+				usablePositions.add(new Position(row, column));
+
+		myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
+		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots()));
+
+		return new ArrayList<>(usablePositions);
 	}
 
 
@@ -355,6 +406,8 @@ public class Game implements IGame
 		alienMoves.add(move);
 
 		moveNumber++;
+		// Registar o momento desta rajada para medir o intervalo até à próxima
+		recordSalvoTime();
 	}
 
 	/**
@@ -451,5 +504,9 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
+	}
+
+	public void metodoComDemasiadosParametros(String p1, int p2, boolean p3, String p4, int p5, int p6) {
+    // Método de teste para o Quality Gate
 	}
 }

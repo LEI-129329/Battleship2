@@ -32,6 +32,7 @@ public class Tasks {
 	private static final String MAPA = "mapa";
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
+	private static final String MAPACOLORIDO = "mapagrafico";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -66,8 +67,25 @@ public class Tasks {
 					if (myFleet != null)
 						game.printMyBoard(false, true);
 					break;
+
+				case MAPACOLORIDO:
+						if(myFleet != null){
+							BattleshipGraphicalView.display("O Meu Tabuleiro", game.getMyFleet(), game.getAlienMoves(), true);}
+						break;
 				case RAJADA:
 					if (game != null) {
+
+						// Medir o tempo desde a última rajada (ANTES de disparar,
+						// porque o timestamp da última é atualizado dentro do fireShots)
+						if (game instanceof Game concreteGame) {
+							long lastTime = concreteGame.getLastSalvoTimeMs();
+							if (lastTime > 0) {
+								long intervalMs = System.currentTimeMillis() - lastTime;
+								System.out.printf("(Passaram %.2fs desde a última rajada)%n",
+										intervalMs / 1000.0);
+							}
+						}
+
 						game.readEnemyFire(in);
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
@@ -81,6 +99,8 @@ public class Tasks {
 				case SIMULA:
 					if (game != null) {
 						while (game.getRemainingShips() > 0){
+							System.out.printf("Probabilidade de acertar pelo menos um navio nesta rajada: %.1f%%%n",
+									game.getProbabilityOfHitInNextRandomBurst() * 100);
 							game.randomEnemyFire();
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
@@ -101,15 +121,16 @@ public class Tasks {
 					if (game != null)
 						game.printMyBoard(true, true);
 					break;
-                case AJUDA:
-                    menuHelp();
-                    break;
+				case AJUDA:
+					menuHelp();
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
 			System.out.print("> ");
 			command = in.next();
 		}
+		System.exit(0); //De modo a thread grafica terminar adicionamos este comando.
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
@@ -123,6 +144,7 @@ public class Tasks {
 		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
 		System.out.println("- " + STATUS + ": Mostra o status atual da frota.)");
 		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
+		System.out.println("- " + MAPACOLORIDO + ": Exibe o mapa da frota numa interface grafica -> apenas de visualização.");
 		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
