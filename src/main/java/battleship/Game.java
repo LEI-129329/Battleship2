@@ -506,5 +506,5 @@ public class Game implements IGame
 		System.out.println("+--------------------------------------------------------------+");
 	}
 
-	public static final int maxships = 10; // teste da constante
+	public static final int MAX_SHIPS = 10; // teste da constante
 }
