@@ -61,7 +61,7 @@ public class Game implements IGame
 
 	private static void printBoardShots(List<IMove> moves, char[][] map) {
 		for (IMove move : moves)
-			for (IPosition shot : move.getShots_Fired()) {
+			for (IPosition shot : move.getShots()) {
 				if (shot.isInside()){
 					int row = shot.getRow();
 					int col = shot.getColumn();
@@ -313,7 +313,7 @@ public class Game implements IGame
 				usablePositions.add(new Position(row, column));
 
 		myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots_Fired()));
+		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots()));
 
 		return new ArrayList<>(usablePositions);
 	}
@@ -484,7 +484,7 @@ public class Game implements IGame
 		assert pos != null;
 
 		for (IMove move : alienMoves)
-			if (move.getShots_Fired().contains(pos))
+			if (move.getShots().contains(pos))
 				return true;
 		return false;
 	}

@@ -192,7 +192,7 @@ public class BattleshipGraphicalView {
     //Função auxiliar para preenchimento do tabuleiro (char) , coloca os tiros  nos respetivos sitios -> copiado da classe Game
     private static void printBoardShots(List<IMove> moves, char[][] map) {
         for (IMove move : moves)
-            for (IPosition shot : move.getShots_Fired()) {
+            for (IPosition shot : move.getShots()) {
                 if (shot.isInside()){
                     int row = shot.getRow();
                     int col = shot.getColumn();

@@ -28,7 +28,7 @@ public interface IMove {
 
 	int getNumber();
 
-	List<IPosition> getShots_Fired();
+	List<IPosition> getShots();
 
 	List<IGame.ShotResult> getShotResults();
 

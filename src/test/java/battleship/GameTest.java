@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Cyclomatic Complexity for each method:
  * - Game (constructor): 1
  * - fire: 7
- * - getShots_Fired: 1
+ * - getShots: 1
  * - getRepeatedShots: 1
  * - getInvalidShots: 1
  * - getHits: 1
