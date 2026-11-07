@@ -2,7 +2,7 @@ name: Checkstyle 113044
 
 on:
         push:
-          branches: [ "checkstyle", "main" ]
+          branches: [ "checkstyle","113044-Checkstyle", "main" ]
         pull_request:
           branches: [ "main" ]
 
