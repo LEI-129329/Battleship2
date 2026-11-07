@@ -417,8 +417,8 @@ public abstract class Ship implements IShip
 	 */
 	@Override
 	public void sink() {
-		for (IPosition position : getPositions())
-			position.shoot();
+		for (IPosition Ship_Position : getPositions())
+			Ship_Position.shoot();
 	}
 
 	/**
