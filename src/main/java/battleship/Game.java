@@ -453,15 +453,15 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 	}
 
-	//código para causar FeatureEnvy
+	//código de teste para causar FeatureEnvy no Qodana
 	public void verificarNavio(Ship s) {
 		// Inveja de atributos: utiliza múltiplos métodos getters do objeto Ship
 		// em vez de executar lógica própria da classe Game.
 		int tamanho = s.getSize();
 		boolean flutuar = s.stillFloating();
-
+		int top = s.getTopMostPos();
 		if (!flutuar) {
-			System.out.println("O navio de tamanho " + tamanho + " foi afundado.");
+			System.out.println("O navio de tamanho " + tamanho + " foi afundado. " + top);
 		}
 	}
 }
