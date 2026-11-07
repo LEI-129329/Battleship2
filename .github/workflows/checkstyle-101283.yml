@@ -8,20 +8,16 @@ on:
 jobs:
   checkstyle:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Download Checkstyle
-        run: |
-          wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar
-
       - name: Run Checkstyle
-        run: |
-          java -jar checkstyle-10.12.4-all.jar -c checkstyle/checkstyle-101283.xml src/main/java/battleship/*.java
+        uses: dbelyaev/action-checkstyle@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: error
+          checkstyle_config: checkstyle/checkstyle-101283.xml
+          checkstyle_version: "10.12.4"
