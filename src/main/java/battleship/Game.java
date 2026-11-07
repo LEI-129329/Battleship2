@@ -28,18 +28,18 @@ public class Game implements IGame
 		assert fleet != null;
 		assert moves != null;
 
-		char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
+		char[][] board_map = new char[BOARD_SIZE][BOARD_SIZE];
 
 		for (int r = 0; r < BOARD_SIZE; r++)
 			for (int c = 0; c < BOARD_SIZE; c++)
-				map[r][c] = EMPTY_MARKER;
+				board_map[r][c] = EMPTY_MARKER;
 
-		printShips(fleet, map);
+		printShips(fleet, board_map);
 
 		if (show_shots)
-			printBoardShots(moves, map);
+			printBoardShots(moves, board_map);
 
-		printBoardFrame(map);
+		printBoardFrame(board_map);
 
 		if (showLegend) {
 			System.out.println("          LEGENDA");
