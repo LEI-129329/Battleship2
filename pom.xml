@@ -182,7 +182,7 @@
 				<version>3.3.1</version>
 				<configuration>
 					<!-- Define o caminho para o ficheiro de regras personalizado -->
-					<configLocation>checksytle/checkstyle-113044.xml</configLocation>
+					<configLocation>checkstyle/checkstyle-113044.xml</configLocation>
 					<!-- Faz com que a build falhe caso sejam detetadas violações de estilo -->
 					<failsOnError>true</failsOnError>
 				</configuration>
