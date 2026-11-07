@@ -19,5 +19,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error
-          checkstyle_config: Checkstyle/checkstyle-101283.xml
-          checkstyle_version: "10.12.4"
+          checkstyle_config: checkstyle/checkstyle-101283.xml
