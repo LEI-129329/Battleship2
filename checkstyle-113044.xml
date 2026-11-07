@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <module name="TreeWalker">
+
+        <!-- Validação de nomes de atributos / variáveis de instância -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="O atributo ''{0}'' deve respeitar o formato camelCase."/>
+        </module>
+
+        <!-- Validação de constantes (static final) -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+            <message key="name.invalidPattern"
+                     value="A constante ''{0}'' deve estar em MAIÚSCULAS (ex: MAX_VALUE)."/>
+        </module>
+
+    </module>
+</module>
