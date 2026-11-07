@@ -500,13 +500,11 @@ public class Game implements IGame
 	}
 
 	public void over() {
-			System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
 	}
 
-	public void metodoComDemasiadosParametros(String p1, int p2, boolean p3, String p4) {
-    // Método de teste para o Quality Gate
-	}
+	public static final int maxShips = 10; // ERRO PROPOSITADO: devia ser MAX_SHIPS
 }
