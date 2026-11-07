@@ -407,13 +407,6 @@ public abstract class Ship implements IShip
 		}
     }
 
-	//código feito para corrigir FeatureEnvy
-	public void calcularEstatisticas() {
-		int navioTamanho = this.size;
-		boolean estaAfundado = this.stillFloating();
-		System.out.println("Tiros: ");
-	}
-
 	/**
 	 * Sink.
 	 */

@@ -452,9 +452,4 @@ public class Game implements IGame
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
 	}
-
-	//código feito para corrigir FeatureEnvy
-	public void processar(Ship ship) {
-		ship.calcularEstatisticas(); // O método agora pertence a quem tem os dados!
-	}
 }
