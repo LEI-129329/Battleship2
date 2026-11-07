@@ -5,6 +5,7 @@ name: Qodana smell gate 101283
 on:
   pull_request:
   push:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -14,18 +15,16 @@ permissions:
 
 jobs:
   qodana:
-    name: Qodana analysis
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2026.2.2
+      - uses: JetBrains/qodana-action@v2026.2
         with:
-          upload-result: true
           args: --config qodana-101283.yaml
+          upload-result: true
+
