@@ -1,0 +1,17 @@
+# 113044 Simão Espanha
+version: "1.0"
+linter: jetbrains/qodana-jvm-community:2026.2
+projectJDK: 25
+profile:
+  groups:
+    - groupId: ExcludedInspections
+      groups:
+        - "ALL"
+  inspections:
+    - group: ExcludedInspections
+      enabled: false
+    - inspection: FeatureEnvy
+      enabled: true
+failureConditions:
+  severityThresholds:
+    any: 27
