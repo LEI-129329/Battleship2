@@ -5,7 +5,7 @@
 
 <module name="Checker">
     <module name="TreeWalker">
-        <!-- Verifica apenas a sintaxe básica -->
+        <!-- Verifica apenas a sintaxe básica para teste -->
         <module name="MethodName"/>
     </module>
 </module>
