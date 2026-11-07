@@ -17,13 +17,13 @@ public class Move implements IMove {
 
 	//-------------------------------------------------------------------
 	private final int number;
-	private final List<IPosition> shots;
+	private final List<IPosition> Shots_Fired;
 	private final List<IGame.ShotResult> shotResults;
 
 	//-------------------------------------------------------------------
 	public Move(int moveNumber, List<IPosition> moveShots, List<IGame.ShotResult> moveResults) {
 		this.number = moveNumber;
-		this.shots = moveShots;
+		this.Shots_Fired = moveShots;
 		this.shotResults = moveResults;
 	}
 
@@ -31,7 +31,7 @@ public class Move implements IMove {
 	public String toString() {
 		return "Move{" +
 				"number=" + number +
-				", shots=" + shots.size() +
+				", Shots_Fired=" + Shots_Fired.size() +
 				", results=" + shotResults.size() +
 				'}';
 	}
@@ -42,8 +42,8 @@ public class Move implements IMove {
 	}
 
 	@Override
-	public List<IPosition> getShots() {
-		return this.shots;
+	public List<IPosition> getShots_Fired() {
+		return this.Shots_Fired;
 	}
 
 	@Override
@@ -52,14 +52,14 @@ public class Move implements IMove {
 	}
 
 	/**
-	 * Processes the results of enemy fire on the game board, analyzing the outcomes of shots,
-	 * such as valid shots, repeated shots, missed shots, hits on ships, and sunk ships. It can
+	 * Processes the results of enemy fire on the game board, analyzing the outcomes of Shots_Fired,
+	 * such as valid Shots_Fired, repeated Shots_Fired, missed Shots_Fired, hits on ships, and sunk ships. It can
 	 * also display a detailed summary of the shot results if verbose mode is activated.
 	 *
 	 * @param verbose a boolean indicating whether a detailed summary should be printed to the console
 	 *                for the processed enemy fire data.
-	 * @return a JSON-formatted string that encapsulates the results, including counts of valid shots,
-	 *         repeated shots, missed shots, shots outside the game board, and details of hits and
+	 * @return a JSON-formatted string that encapsulates the results, including counts of valid Shots_Fired,
+	 *         repeated Shots_Fired, missed Shots_Fired, Shots_Fired outside the game board, and details of hits and
 	 *         sunk ships.
 	 */
 	@Override

@@ -28,18 +28,18 @@ public class Game implements IGame
 		assert fleet != null;
 		assert moves != null;
 
-		char[][] board_map = new char[BOARD_SIZE][BOARD_SIZE];
+		char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
 
 		for (int r = 0; r < BOARD_SIZE; r++)
 			for (int c = 0; c < BOARD_SIZE; c++)
-				board_map[r][c] = EMPTY_MARKER;
+				map[r][c] = EMPTY_MARKER;
 
-		printShips(fleet, board_map);
+		printShips(fleet, map);
 
 		if (show_shots)
-			printBoardShots(moves, board_map);
+			printBoardShots(moves, map);
 
-		printBoardFrame(board_map);
+		printBoardFrame(map);
 
 		if (showLegend) {
 			System.out.println("          LEGENDA");
@@ -61,7 +61,7 @@ public class Game implements IGame
 
 	private static void printBoardShots(List<IMove> moves, char[][] map) {
 		for (IMove move : moves)
-			for (IPosition shot : move.getShots()) {
+			for (IPosition shot : move.getShots_Fired()) {
 				if (shot.isInside()){
 					int row = shot.getRow();
 					int col = shot.getColumn();
@@ -313,7 +313,7 @@ public class Game implements IGame
 				usablePositions.add(new Position(row, column));
 
 		myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots()));
+		alienMoves.forEach(move -> usablePositions.removeAll(move.getShots_Fired()));
 
 		return new ArrayList<>(usablePositions);
 	}
@@ -484,7 +484,7 @@ public class Game implements IGame
 		assert pos != null;
 
 		for (IMove move : alienMoves)
-			if (move.getShots().contains(pos))
+			if (move.getShots_Fired().contains(pos))
 				return true;
 		return false;
 	}

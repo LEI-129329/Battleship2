@@ -33,7 +33,7 @@ public class AiShotStrategy {
 		// Build set of all positions already shot by the AI
 		Set<IPosition> alreadyShot = new HashSet<>();
 		for (IMove move : game.getAlienMoves()) {
-			alreadyShot.addAll(move.getShots());
+			alreadyShot.addAll(move.getShots_Fired());
 		}
 
 		// Collect hit-but-not-sunk positions (TARGET phase candidates)
@@ -97,7 +97,7 @@ public class AiShotStrategy {
 		// Gather all positions the AI hit
 		List<IPosition> hits = new ArrayList<>();
 		for (IMove move : game.getAlienMoves()) {
-			for (int i = 0; i < move.getShots().size(); i++) {
+			for (int i = 0; i < move.getShots_Fired().size(); i++) {
 				IGame.ShotResult result = move.getShotResults().isEmpty()
 						? null
 						: (i < move.getShotResults().size() ? move.getShotResults().get(i) : null);
@@ -105,7 +105,7 @@ public class AiShotStrategy {
 				// If we have result metadata, use it precisely
 				if (result != null && result.valid() && !result.repeated()
 						&& result.ship() != null && !result.sunk()) {
-					hits.add(move.getShots().get(i));
+					hits.add(move.getShots_Fired().get(i));
 				}
 			}
 		}
