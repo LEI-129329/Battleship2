@@ -1,0 +1,23 @@
+# 101283 - André Durães
+name: Checkstyle Constant Gate 101283
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: error
+          checkstyle_config: Checkstyle/checkstyle-101283.xml
+          checkstyle_version: "10.12.4"
