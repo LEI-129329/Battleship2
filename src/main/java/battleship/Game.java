@@ -452,4 +452,16 @@ public class Game implements IGame
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
 	}
+
+	//código para causar FeatureEnvy
+	public void verificarNavio(Ship s) {
+		// Inveja de atributos: utiliza múltiplos métodos getters do objeto Ship
+		// em vez de executar lógica própria da classe Game.
+		int tamanho = s.getSize();
+		boolean flutuar = s.stillFloating();
+
+		if (!flutuar) {
+			System.out.println("O navio de tamanho " + tamanho + " foi afundado.");
+		}
+	}
 }
