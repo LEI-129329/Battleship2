@@ -20,4 +20,3 @@ jobs:
           reporter: github-pr-review
           level: error
           checkstyle_config: checkstyle/checkstyle-101283.xml
-          checkstyle_version: "10.12.4"
