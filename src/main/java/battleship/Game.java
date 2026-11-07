@@ -506,7 +506,7 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 	}
 
-	public void metodoComDemasiadosParametros(String p1, int p2, boolean p3, String p4, int p5, int p6) {
+	public void metodoComDemasiadosParametros(String p1, int p2, boolean p3, String p4) {
     // Método de teste para o Quality Gate
 	}
 }
