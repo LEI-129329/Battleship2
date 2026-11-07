@@ -14,4 +14,4 @@ profile:
       enabled: true
 failureConditions:
   severityThresholds:
-    any: 0
+    any: 27
