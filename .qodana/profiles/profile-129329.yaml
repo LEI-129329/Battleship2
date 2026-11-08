@@ -5,10 +5,10 @@ profile:
   base:
     name: empty
   inspections:
-    # ID da inspeção no Qodana/Inspectopedia: OverlyComplexClass
-    # ID interno apresentado no IntelliJ: ClassComplexity
+    # ID da inspeção no perfil IntelliJ/Qodana Community: ClassComplexity
+    # ID apresentado pela Inspectopedia para supressão: OverlyComplexClass
     # A opção m_limit define o limite máximo de complexidade ciclomática total da classe.
-    - inspection: OverlyComplexClass
+    - inspection: ClassComplexity
       enabled: true
       options:
         m_limit: 46

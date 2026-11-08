@@ -6,7 +6,13 @@ linter: jetbrains/qodana-jvm-community:2026.2
 projectJDK: "21"
 
 profile:
-  path: .qodana/profiles/profile-129329.yaml
+  base:
+    name: empty
+  inspections:
+    - inspection: ClassComplexity
+      enabled: true
+      options:
+        m_limit: 46
 
 failureConditions:
   severityThresholds:
