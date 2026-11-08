@@ -1,4 +1,6 @@
 # 129329 - Large Class / God Class
+version: "1.0"
+
 profile:
   base:
     name: empty
