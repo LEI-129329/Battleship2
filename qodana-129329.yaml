@@ -1,4 +1,5 @@
-# 129329 - Large Class / God Class
+# 129329 - Luís Aguiar de Sousa
+# Large Class / God Class
 version: "1.0"
 linter: jetbrains/qodana-jvm-community:2026.2
 
