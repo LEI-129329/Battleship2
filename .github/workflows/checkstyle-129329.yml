@@ -1,0 +1,30 @@
+# 129329 - Luís Aguiar de Sousa
+name: Checkstyle 129329
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  checkstyle:
+    name: Checkstyle analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: checkstyle/checkstyle-129329.xml
+          reporter: github-pr-check
+          fail_level: any
+          filter_mode: nofilter
