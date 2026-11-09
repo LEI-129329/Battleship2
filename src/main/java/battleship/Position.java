@@ -118,12 +118,12 @@ public class Position implements IPosition {
 	 * Checks if this position is adjacent to another position.
 	 * Two positions are adjacent if they are next to each other horizontally, vertically, or diagonally.
 	 *
-	 * @param other the other position to compare
+	 * @param otherPosition the other position to compare
 	 * @return true if the positions are adjacent, false otherwise
 	 */
 	@Override
-	public boolean isAdjacentTo(IPosition other) {
-		return Math.abs(this.row - other.getRow()) <= 1 && Math.abs(this.column - other.getColumn()) <= 1;
+	public boolean isAdjacentTo(IPosition otherPosition) {
+		return Math.abs(this.row - otherPosition.getRow()) <= 1 && Math.abs(this.column - otherPosition.getColumn()) <= 1;
 	}
 
 	/**
