@@ -11,6 +11,7 @@ import java.net.http.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Sends the AI's shots to the student's server (m2a) and reads back the results (m2b).
@@ -31,9 +32,13 @@ public class CallbackClient {
 	private final ObjectMapper mapper;
 
 	public CallbackClient() {
-		this.http   = HttpClient.newBuilder()
+		this(HttpClient.newBuilder()
 				.connectTimeout(Duration.ofSeconds(5))
-				.build();
+				.build());
+	}
+
+	CallbackClient(HttpClient http) {
+		this.http = Objects.requireNonNull(http);
 		this.mapper = new ObjectMapper();
 	}
 
