@@ -135,9 +135,7 @@ public class Move implements IMove {
 				}
 
 				if (repeatedShots > 0) {
-					if (validShots > 0) {
-						output.append(", ");
-					}
+					output.append(", ");
 					output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
 				}
 			}
@@ -187,8 +185,7 @@ public class Move implements IMove {
 		String jsonString;
 
 		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		ObjectMapper objectMapper = createObjectMapper();
 
 		try {
 			jsonString = objectMapper.writeValueAsString(response);
@@ -201,5 +198,11 @@ public class Move implements IMove {
 
 		// Retornar o JSON
 		return jsonString;
+	}
+
+	protected ObjectMapper createObjectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		return objectMapper;
 	}
 }
