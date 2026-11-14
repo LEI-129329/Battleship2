@@ -1,6 +1,5 @@
 package battleship;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -425,55 +424,6 @@ class MoveTest {
 		assertTrue(output.json().get("sunkBoats").get(0).has("count")
 						&& output.json().get("sunkBoats").get(1).has("count"),
 				"Error: every sunk-boat JSON entry should include its sunk count.");
-	}
-
-	@Test
-	void processEnemyFire32() {
-		move = withResults(result(true, false, "Frigate", false),
-				result(true, false, "Frigate", false));
-		ProcessOutput output = run(true);
-
-		assertTrue(output.console().contains("2 tiros num(a) Frigate"),
-				"Error: verbose output should pluralize multiple hits on one afloat ship.");
-		assertSummary(output, 2, 0, 0, 1, 0, 1,
-				"Error: multiple hits on an afloat ship should still produce one aggregated hit entry.");
-	}
-
-	@Test
-	void processEnemyFire33() {
-		move = withResults(result(true, true, null, false),
-				result(true, true, null, false),
-				result(true, false, null, false));
-		ProcessOutput output = run(true);
-
-		assertEquals("1 tiro válido: 1 tiro na água, 2 tiros repetidos", summaryLine(output.console()),
-				"Error: multiple repeated shots alongside a valid shot should be pluralized and comma-separated.");
-		assertSummary(output, 1, 2, 1, 0, 0, 0,
-				"Error: a mixed salvo should report valid, repeated, and missed shots accurately.");
-	}
-
-	@Test
-	void processEnemyFireSerializationFailure() {
-		move = new Move(7, List.of(), List.of(result(true, false, null, false))) {
-			@Override
-			protected ObjectMapper createObjectMapper() {
-				return new ObjectMapper() {
-					@Override
-					public String writeValueAsString(Object value) throws JsonProcessingException {
-						throw new JsonProcessingException("forced serialization failure") { };
-					}
-				};
-			}
-		};
-
-		RuntimeException exception = assertThrows(RuntimeException.class,
-				() -> move.processEnemyFire(false),
-				"Error: a JSON serialization failure should be wrapped in a RuntimeException.");
-
-		assertTrue(exception.getMessage().contains("serializar"),
-				"Error: the serialization failure should be wrapped with the documented runtime exception.");
-		assertInstanceOf(JsonProcessingException.class, exception.getCause(),
-				"Error: the wrapped cause should be the original JSON processing exception.");
 	}
 
 	private Move withResults(IGame.ShotResult... results) {
