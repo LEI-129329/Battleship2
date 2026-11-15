@@ -76,7 +76,7 @@ Hits are calculated based on the intersection of the shot vector and the ship's 
 ## 🚀 Installation & Setup
 
 ### Prerequisites
-* JDK 17 or higher
+* JDK 21 or higher
 * Git
 
 ### Step-by-Step
