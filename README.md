@@ -105,21 +105,20 @@ You can access the generated Javadoc here:
 ### Core Logic
 ```java
 public class Ship {
-    private String name;
-    private int size;
-    private boolean isSunk;
+   private String name;
+   private int size;
+   private boolean isSunk;
 
-    // TODO: Implement damage logic
-    public void hit() {
-        // Implementation here
-    }
+   // TODO: Implement damage logic
+   public void hit() {
+      // Implementation here
+   }
 }
 ```
 
 ### Design Patterns Used:
 - **Strategy Pattern:** For different AI difficulty levels.
 - **Observer Pattern:** To update the UI when a ship is hit.
-</details>
 
 ### Logic Flow
 ```mermaid
@@ -186,3 +185,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
  Renderiza uma grelha 10x10. Usa "." para desconhecido, "O" para água e "X" para acerto.**Passo 2: Processamento Analítico (Chain of Thought)** 
  <!-- Espaço para o LLM calcular interseções e halos antes de emitir as coordenadas --> 
  Escreve um parágrafo conciso a aplicar as regras dos pontos 3 e 4. Atualiza os halos de água em redor de navios afundados, identifica cruzamentos prováveis para os navios maiores ainda em jogo e define a intenção da Aguarda pelo primeiro estado do tabuleiro para iniciares a tua rotina de disparo. Escreve sempre as tuas jogadas no seguinte formato: "rajada a1 a2 a3" 
+
+## Workflow de testes unitários (GitHub Actions)
+
+O ficheiro `.github/workflows/maven.yml` define um workflow de integração contínua que:
+
+- **Quando corre:** a cada *push* em qualquer ramo e em *pull requests* para `main`.
+- **O que faz:** compila o projeto com Maven (JDK 21) e executa a bateria de testes unitários JUnit (`mvn -B package`).
+- **Resultado:** se algum teste falhar, o workflow termina com erro e o estado fica visível no separador *Actions* e no *pull request*.
