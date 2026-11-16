@@ -1,5 +1,6 @@
 package battleship;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -424,6 +425,54 @@ class MoveTest {
 		assertTrue(output.json().get("sunkBoats").get(0).has("count")
 						&& output.json().get("sunkBoats").get(1).has("count"),
 				"Error: every sunk-boat JSON entry should include its sunk count.");
+	}
+
+	@Test
+	void processEnemyFireReportsMultipleHitsOnAfloatShip() {
+		move = withResults(result(true, false, "Frigate", false),
+				result(true, false, "Frigate", false));
+		ProcessOutput output = run(true);
+
+		assertTrue(output.console().contains("2 tiros num(a) Frigate"),
+				"Error: verbose output should pluralize multiple hits on an afloat ship.");
+		assertSummary(output, 2, 0, 0, 1, 0, 1,
+				"Error: multiple hits on one afloat ship should remain one JSON entry.");
+	}
+
+	@Test
+	void processEnemyFireReportsMultipleRepeatedShotsWithValidShots() {
+		move = withResults(result(true, false, null, false),
+				result(true, true, null, false),
+				result(true, true, null, false));
+		ProcessOutput output = run(true);
+
+		assertTrue(output.console().contains("1 tiro válido: 1 tiro na água, 2 tiros repetidos"),
+				"Error: verbose output should pluralize repeated shots alongside valid shots.");
+		assertSummary(output, 1, 2, 1, 0, 0, 0,
+				"Error: repeated shots should be reported separately from the valid miss.");
+	}
+
+	@Test
+	void processEnemyFireThrowsWhenJsonSerializationFails() {
+		JsonProcessingException serializationFailure = new JsonProcessingException("forced serialization failure") { };
+		Move failingMove = new Move(7, List.of(), List.of()) {
+			@Override
+			protected ObjectMapper createObjectMapper() {
+				return new ObjectMapper() {
+					@Override
+					public String writeValueAsString(Object value) throws JsonProcessingException {
+						throw serializationFailure;
+					}
+				};
+			}
+		};
+
+		RuntimeException exception = assertThrows(RuntimeException.class,
+				() -> failingMove.processEnemyFire(false));
+
+		assertAll("serialization failure",
+				() -> assertEquals("Erro ao serializar o JSON dos resultados da jogada", exception.getMessage()),
+				() -> assertSame(serializationFailure, exception.getCause()));
 	}
 
 	private Move withResults(IGame.ShotResult... results) {
