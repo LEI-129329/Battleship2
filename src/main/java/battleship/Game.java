@@ -1,8 +1,5 @@
 package battleship;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
 import java.util.*;
@@ -100,51 +97,6 @@ public class Game implements IGame
 		for (int col = 0; col < BOARD_SIZE; col++)
 			System.out.print("--");
 		System.out.println("-+");
-	}
-
-	/**
-	 * Serializes a list of shot positions into a JSON string. Each shot is represented
-	 * with its classic row and column values. The method uses the Jackson library for
-	 * JSON serialization.
-	 *
-	 * @param shots a list of shot positions to be serialized. Each position is represented
-	 *              by an implementation of the {@code IPosition} interface. The list must
-	 *              not be null.
-	 * @return a formatted JSON string containing the shot positions. Each shot includes
-	 *         its classic row and column.
-	 * @throws RuntimeException if an error occurs during JSON serialization.
-	 */
-	public static String jsonShots(List<IPosition> shots) {
-
-		assert shots != null;
-
-		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-		// 1. Create a simplified list containing only the desired data
-		List<Map<String, Object>> simplifiedShots = new ArrayList<>();
-		for (IPosition shot : shots) {
-			Map<String, Object> simplePos = new LinkedHashMap<>();
-			// We use getClassicRow() and getClassicColumn() based on your current JSON output
-			simplePos.put("row", String.valueOf(shot.getClassicRow()));
-			simplePos.put("column", shot.getClassicColumn());
-			simplifiedShots.add(simplePos);
-		}
-
-		String jsonString = null;
-		try {
-			// 2. Serialize the simplified list instead of the raw 'shots' list
-			jsonString = objectMapper.writeValueAsString(simplifiedShots);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Erro ao serializar o JSON", e);
-		}
-
-		System.out.println(jsonString);
-		System.out.println();
-
-		// Retornar o JSON
-		return jsonString;
 	}
 
 	//------------------------------------------------------------------
@@ -249,26 +201,25 @@ public class Game implements IGame
 	 * @throws RuntimeException if there is an error during the JSON serialization of the shots.
 	 */
 	public String randomEnemyFire() {
-
-		// Criar uma instância de Random com uma seed baseada no timestamp atual
-		Random random = new Random(System.currentTimeMillis());
-
 		List<IPosition> candidateShots = getCandidateShots();
+		List<IPosition> shots = generateRandomShots(candidateShots, new Random(System.currentTimeMillis()));
 
-		// Criar lista para armazenar os tiros
-		List<IPosition> shots = new ArrayList<IPosition>();
+		printRandomShots(shots);
+		fireShots(shots);
+		return JsonShots.jsonShots(shots);
+	}
 
-		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
-
+	private List<IPosition> generateRandomShots(List<IPosition> candidateShots, Random random) {
+		List<IPosition> shots = new ArrayList<>();
 		IPosition newShot = null;
-		if (candidateShots.size() >= Game.NUMBER_SHOTS)
+
+		if (candidateShots.size() >= NUMBER_SHOTS) {
 			while (shots.size() < Game.NUMBER_SHOTS) {
 				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 				if (!shots.contains(newShot))
 					shots.add(newShot);
 			}
-		else {
+		} else {
 			while (shots.size() < candidateShots.size()) {
 				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 				if (!shots.contains(newShot))
@@ -278,14 +229,15 @@ public class Game implements IGame
 				shots.add(newShot);
 		}
 
+		return shots;
+	}
+
+	private void printRandomShots(List<IPosition> shots) {
+		System.out.println();
 		System.out.print("rajada ");
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
-
-		this.fireShots(shots);
-
-		return Game.jsonShots(shots);
 	}
 
 	@Override
@@ -367,7 +319,7 @@ public class Game implements IGame
 
 		this.fireShots(shots);
 
-		return Game.jsonShots(shots);
+		return JsonShots.jsonShots(shots);
 	}
 
 	/**

@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Shot
  *
- * @author Your Name
+ * @author Nelss
  * Date: 20/02/2026
  * Time: 19:39
  */
@@ -19,6 +19,18 @@ public class Move implements IMove {
 	private final int number;
 	private final List<IPosition> shots;
 	private final List<IGame.ShotResult> shotResults;
+
+	private record ShotSummary(
+			int validShots,
+			int repeatedShots,
+			int missedShots,
+			Map<String, Integer> sunkBoatsCount,
+			Map<String, Integer> hitsPerBoat) {
+
+		private int outsideShots() {
+			return Game.NUMBER_SHOTS - validShots - repeatedShots;
+		}
+	}
 
 	//-------------------------------------------------------------------
 	public Move(int moveNumber, List<IPosition> moveShots, List<IGame.ShotResult> moveResults) {
@@ -64,104 +76,139 @@ public class Move implements IMove {
 	 */
 	@Override
 	public String processEnemyFire(boolean verbose) {
+		ShotSummary summary = summarizeResults();
 
+		if (verbose) {
+			System.out.println("Jogada nº" + this.number + " -> " + formatSummary(summary));
+		}
+
+		String jsonString = serializeResponse(buildResponse(summary));
+		System.out.println(jsonString);
+		System.out.println();
+		return jsonString;
+	}
+
+	private ShotSummary summarizeResults() {
 		int validShots = 0;
 		int repeatedShots = 0;
 		int missedShots = 0;
-
-		Map<String, Integer> sunkBoatsCount = new HashMap<>(); // Rastrear quantos navios de cada tipo afundaram
+		Map<String, Integer> sunkBoatsCount = new HashMap<>();
 		Map<String, Integer> hitsPerBoat = new HashMap<>();
 
-		// Processar cada resultado de tiro
 		for (IGame.ShotResult result : this.shotResults) {
 			if (!result.valid()) {
-				// Tiro inválido - apenas ignorar
 				continue;
 			}
 
-			if (result.repeated())
-				repeatedShots++; // tiro repetido
-			else {
-				// Tiro válido
-				validShots++;
-				if (result.ship() == null)
-					missedShots++; // Tiro na água
-				else{
-					String boatName = result.ship().getCategory();
-					hitsPerBoat.put(boatName, hitsPerBoat.getOrDefault(boatName, 0) + 1);
-					if (result.sunk())
-						sunkBoatsCount.put(boatName, sunkBoatsCount.getOrDefault(boatName, 0) + 1); // Contar barcos do mesmo tipo afundados
-				}
+			if (result.repeated()) {
+				repeatedShots++;
+				continue;
+			}
+
+			validShots++;
+			if (result.ship() == null) {
+				missedShots++;
+				continue;
+			}
+
+			String boatName = result.ship().getCategory();
+			hitsPerBoat.put(boatName, hitsPerBoat.getOrDefault(boatName, 0) + 1);
+			if (result.sunk()) {
+				sunkBoatsCount.put(boatName, sunkBoatsCount.getOrDefault(boatName, 0) + 1);
 			}
 		}
 
-		// Determinar número de tiros fora do tabuleiro
-		int outsideShots = Game.NUMBER_SHOTS - validShots - repeatedShots;
+		return new ShotSummary(validShots, repeatedShots, missedShots, sunkBoatsCount, hitsPerBoat);
+	}
 
-		if (verbose) {
-			// Construção da mensagem de saída
-			StringBuilder output = new StringBuilder();
+	private String formatSummary(ShotSummary summary) {
+		StringBuilder output = new StringBuilder();
 
-			if (validShots == 0 && repeatedShots > 0) {
-				output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
-			} else {
-				if (validShots > 0) {
-					output.append(validShots).append(" tiro").append(validShots > 1 ? "s" : "").append(" válido").append(validShots > 1 ? "s" : "").append(": ");
-				}
-
-				// Atualizar lógica para contar múltiplos barcos afundados do mesmo tipo
-				if (!sunkBoatsCount.isEmpty()) {
-					for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-						String boatName = entry.getKey();
-						int count = entry.getValue();
-						output.append(count).append(" ").append(boatName).append(count > 1 ? "s" : "").append(" ao fundo").append(" + ");
-					}
-				}
-
-				if (!hitsPerBoat.isEmpty()) {
-					for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
-						String boatName = entry.getKey();
-						int hits = entry.getValue();
-						if (!sunkBoatsCount.containsKey(boatName)) {
-							output.append(hits).append(" tiro").append(hits > 1 ? "s" : "").append(" num(a) ").append(boatName).append(" + ");
-						}
-					}
-				}
-
-				if (missedShots > 0) {
-					output.append(missedShots).append(" tiro").append(missedShots > 1 ? "s" : "").append(" na água");
-				} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
-					output.setLength(output.length() - 2); // Remover o "+" final
-				}
-
-				if (repeatedShots > 0) {
-					output.append(", ");
-					output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
-				}
+		if (summary.validShots() == 0 && summary.repeatedShots() > 0) {
+			appendRepeatedShots(output, summary.repeatedShots());
+		} else {
+			if (summary.validShots() > 0) {
+				output.append(summary.validShots()).append(" tiro")
+						.append(summary.validShots() > 1 ? "s" : "")
+						.append(" válido")
+						.append(summary.validShots() > 1 ? "s" : "")
+						.append(": ");
 			}
 
-			// Adicionar contagem de tiros fora do tabuleiro
-			if (outsideShots > 0) {
-				if (!output.isEmpty()) {
-					output.append(", ");
-				}
-				output.append(outsideShots).append(" tiro").append(outsideShots > 1 ? "s" : "").append(" exterior").append(outsideShots > 1 ? "es" : "");
+			appendSunkBoats(output, summary.sunkBoatsCount());
+			appendHitsOnBoats(output, summary.hitsPerBoat(), summary.sunkBoatsCount());
+
+			if (summary.missedShots() > 0) {
+				output.append(summary.missedShots()).append(" tiro")
+						.append(summary.missedShots() > 1 ? "s" : "")
+						.append(" na água");
+			} else if (!summary.sunkBoatsCount().isEmpty() || !summary.hitsPerBoat().isEmpty()) {
+				output.setLength(output.length() - 2);
 			}
 
-			// Imprimir na consola se verbose for true
-			System.out.println("Jogada nº" + this.number + " -> " + output);
+			if (summary.repeatedShots() > 0) {
+				if (summary.validShots() > 0) {
+					output.append(", ");
+				}
+				appendRepeatedShots(output, summary.repeatedShots());
+			}
 		}
 
-		// Criar o mapa para o JSON
-		Map<String, Object> response = new HashMap<>();
-		response.put("validShots", validShots);
-		response.put("outsideShots", outsideShots);
-		response.put("repeatedShots", repeatedShots);
-		response.put("missedShots", missedShots);
+		appendOutsideShots(output, summary.outsideShots());
+		return output.toString();
+	}
 
-		// Criar a lista de barcos afundados
-		List<Map<String, Object>> sunkBoats = new ArrayList<>();
+	private void appendSunkBoats(StringBuilder output, Map<String, Integer> sunkBoatsCount) {
 		for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
+			String boatName = entry.getKey();
+			int count = entry.getValue();
+			output.append(count).append(" ").append(boatName)
+					.append(count > 1 ? "s" : "")
+					.append(" ao fundo").append(" + ");
+		}
+	}
+
+	private void appendHitsOnBoats(
+			StringBuilder output,
+			Map<String, Integer> hitsPerBoat,
+			Map<String, Integer> sunkBoatsCount) {
+		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
+			String boatName = entry.getKey();
+			int hits = entry.getValue();
+			if (!sunkBoatsCount.containsKey(boatName)) {
+				output.append(hits).append(" tiro").append(hits > 1 ? "s" : "")
+						.append(" num(a) ").append(boatName).append(" + ");
+			}
+		}
+	}
+
+	private void appendRepeatedShots(StringBuilder output, int repeatedShots) {
+		output.append(repeatedShots).append(" tiro")
+				.append(repeatedShots > 1 ? "s" : "")
+				.append(" repetido")
+				.append(repeatedShots > 1 ? "s" : "");
+	}
+
+	private void appendOutsideShots(StringBuilder output, int outsideShots) {
+		if (outsideShots > 0) {
+			if (!output.isEmpty()) {
+				output.append(", ");
+			}
+			output.append(outsideShots).append(" tiro")
+					.append(outsideShots > 1 ? "s" : "")
+					.append(" exterior")
+					.append(outsideShots > 1 ? "es" : "");
+		}
+	}
+
+	private Map<String, Object> buildResponse(ShotSummary summary) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("validShots", summary.validShots());
+		response.put("outsideShots", summary.outsideShots());
+		response.put("repeatedShots", summary.repeatedShots());
+		response.put("missedShots", summary.missedShots());
+		List<Map<String, Object>> sunkBoats = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : summary.sunkBoatsCount().entrySet()) {
 			Map<String, Object> boat = new HashMap<>();
 			boat.put("type", entry.getKey());
 			boat.put("count", entry.getValue());
@@ -169,10 +216,9 @@ public class Move implements IMove {
 		}
 		response.put("sunkBoats", sunkBoats);
 
-		// Criar a lista de acertos em barcos que não foram afundados
 		List<Map<String, Object>> boatHits = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
-			if (!sunkBoatsCount.containsKey(entry.getKey())) {
+		for (Map.Entry<String, Integer> entry : summary.hitsPerBoat().entrySet()) {
+			if (!summary.sunkBoatsCount().containsKey(entry.getKey())) {
 				Map<String, Object> boat = new HashMap<>();
 				boat.put("type", entry.getKey());
 				boat.put("hits", entry.getValue());
@@ -181,23 +227,18 @@ public class Move implements IMove {
 		}
 		response.put("hitsOnBoats", boatHits);
 
-		// Serializar o JSON utilizando Jackson
-		String jsonString;
+		return response;
+	}
 
-		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = createObjectMapper();
+	private String serializeResponse(Map<String, Object> response) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		try {
-			jsonString = objectMapper.writeValueAsString(response);
+			return objectMapper.writeValueAsString(response);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Erro ao serializar o JSON dos resultados da jogada", e);
 		}
-
-		System.out.println(jsonString);
-		System.out.println();
-
-		// Retornar o JSON
-		return jsonString;
 	}
 
 	protected ObjectMapper createObjectMapper() {

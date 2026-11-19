@@ -267,8 +267,8 @@ public class GameTest {
 	@Test
 	@DisplayName("Serializa uma lista vazia e uma lista de posições")
 	void jsonShotsSerializesPositions() {
-		String emptyJson = Game.jsonShots(List.of());
-		String shotsJson = Game.jsonShots(List.of(new Position('B', 4)));
+		String emptyJson = JsonShots.jsonShots(List.of());
+		String shotsJson = JsonShots.jsonShots(List.of(new Position('B', 4)));
 
 		assertAll("serialização dos tiros",
 				() -> assertEquals("[]", emptyJson.replaceAll("\\s", ""),

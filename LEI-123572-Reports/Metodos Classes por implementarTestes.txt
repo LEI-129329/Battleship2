@@ -1,8 +1,0 @@
-Interface Compass : Metodo: Compass randomBearing (6/7).
-fleet
-frigate
-GameTeste(Muito) -> 53% dos métodos
-IGame(possivelmente não precisa), não tem nenhum teste
-Position
-ship
-TaskTeste-> Não faz nenhum teste, tem testes mas vazios
