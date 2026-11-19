@@ -240,4 +240,10 @@ public class Move implements IMove {
 			throw new RuntimeException("Erro ao serializar o JSON dos resultados da jogada", e);
 		}
 	}
+
+	protected ObjectMapper createObjectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		return objectMapper;
+	}
 }
