@@ -35,7 +35,7 @@ class TasksTest {
     void menuProcessesInteractiveCommands() throws Exception {
         String input = "estado\nmapa\nmapagrafico\nrajada\nsimula\ntiros\ndesconhecido\najuda\nlefrota\n"
                 + fleetInput() + "\n"
-                + "estado\nmapa\ntiros\n"
+                + "estado\nmapa\ntiros\nmapagrafico\n"
                 + "rajada A1 A3 A5\n"
                 + "rajada A7 A9 C1\n"
                 + "rajada C3 C5 C7\n"
