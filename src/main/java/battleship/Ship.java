@@ -112,12 +112,7 @@ public abstract class Ship implements IShip
 		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
-	
-		this.category = category;
-		this.bearing = bearing;
-		this.pos = pos;
 		this.size = size;
-
 		positions = new ArrayList<>();
     }
 
@@ -229,85 +224,36 @@ public abstract class Ship implements IShip
 	return false;
     }
 
-	/**
-	 * Gets top most pos.
-	 *
-	 * @return the top most pos
-	 */
-	/*
-     * (non-Javadoc)
-     * 
-     * @see battleship.IShip#getTopMostPos()
-     */
-    @Override
-    public int getTopMostPos()
-    {
-	int top = getPositions().get(0).getRow();
-	for (int i = 1; i < getSize(); i++)
-	    if (getPositions().get(i).getRow() < top)
-		top = getPositions().get(i).getRow();
-	return top;
-    }
+	private int getExtremePosition(
+			java.util.function.ToIntFunction<IPosition> coordinate,
+			boolean minimum) {
+		int extreme = coordinate.applyAsInt(getPositions().get(0));
 
-	/**
-	 * Gets bottom most pos.
-	 *
-	 * @return the bottom most pos
-	 */
-	/*
-     * (non-Javadoc)
-     * 
-     * @see battleship.IShip#getBottomMostPos()
-     */
-    @Override
-    public int getBottomMostPos()
-    {
-	int bottom = getPositions().get(0).getRow();
-	for (int i = 1; i < getSize(); i++)
-	    if (getPositions().get(i).getRow() > bottom)
-			bottom = getPositions().get(i).getRow();
-	return bottom;
-    }
+		for (int i = 1; i < getSize(); i++) {
+			int value = coordinate.applyAsInt(getPositions().get(i));
+			extreme = minimum
+					? Math.min(extreme, value)
+					: Math.max(extreme, value);
+		}
 
-	/**
-	 * Gets left most pos.
-	 *
-	 * @return the left most pos
-	 */
-	/*
-     * (non-Javadoc)
-     * 
-     * @see battleship.IShip#getLeftMostPos()
-     */
-    @Override
-    public int getLeftMostPos()
-    {
-	int left = getPositions().get(0).getColumn();
-	for (int i = 1; i < getSize(); i++)
-	    if (getPositions().get(i).getColumn() < left)
-			left = getPositions().get(i).getColumn();
-	return left;
-    }
+		return extreme;
+	}
 
-	/**
-	 * Gets right most pos.
-	 *
-	 * @return the right most pos
-	 */
-	/*
-     * (non-Javadoc)
-     * 
-     * @see battleship.IShip#getRightMostPos()
-     */
-    @Override
-    public int getRightMostPos()
-    {
-	int right = getPositions().get(0).getColumn();
-	for (int i = 1; i < getSize(); i++)
-	    if (getPositions().get(i).getColumn() > right)
-		right = getPositions().get(i).getColumn();
-	return right;
-    }
+	public int getTopMostPos() {
+		return getExtremePosition(IPosition::getRow, true);
+	}
+
+	public int getBottomMostPos() {
+		return getExtremePosition(IPosition::getRow, false);
+	}
+
+	public int getLeftMostPos() {
+		return getExtremePosition(IPosition::getColumn, true);
+	}
+
+	public int getRightMostPos() {
+		return getExtremePosition(IPosition::getColumn, false);
+	}
 
 	/**
 	 * Occupies boolean.
