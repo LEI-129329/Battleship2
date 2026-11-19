@@ -201,26 +201,25 @@ public class Game implements IGame
 	 * @throws RuntimeException if there is an error during the JSON serialization of the shots.
 	 */
 	public String randomEnemyFire() {
-
-		// Criar uma instância de Random com uma seed baseada no timestamp atual
-		Random random = new Random(System.currentTimeMillis());
-
 		List<IPosition> candidateShots = getCandidateShots();
+		List<IPosition> shots = generateRandomShots(candidateShots, new Random(System.currentTimeMillis()));
 
-		// Criar lista para armazenar os tiros
-		List<IPosition> shots = new ArrayList<IPosition>();
+		printRandomShots(shots);
+		fireShots(shots);
+		return JsonShots.jsonShots(shots);
+	}
 
-		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
-
+	private List<IPosition> generateRandomShots(List<IPosition> candidateShots, Random random) {
+		List<IPosition> shots = new ArrayList<>();
 		IPosition newShot = null;
-		if (candidateShots.size() >= Game.NUMBER_SHOTS)
+
+		if (candidateShots.size() >= NUMBER_SHOTS) {
 			while (shots.size() < Game.NUMBER_SHOTS) {
 				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 				if (!shots.contains(newShot))
 					shots.add(newShot);
 			}
-		else {
+		} else {
 			while (shots.size() < candidateShots.size()) {
 				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 				if (!shots.contains(newShot))
@@ -230,14 +229,15 @@ public class Game implements IGame
 				shots.add(newShot);
 		}
 
+		return shots;
+	}
+
+	private void printRandomShots(List<IPosition> shots) {
+		System.out.println();
 		System.out.print("rajada ");
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
-
-		this.fireShots(shots);
-
-		return JsonShots.jsonShots(shots);
 	}
 
 	@Override
