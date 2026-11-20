@@ -1,0 +1,157 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PdfReportGenerator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">restserver</a>
+</div>
+
+<h1>Coverage Summary for Class: PdfReportGenerator (restserver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PdfReportGenerator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package restserver;
+&nbsp;
+&nbsp;import com.lowagie.text.Document;
+&nbsp;import com.lowagie.text.Paragraph;
+&nbsp;import com.lowagie.text.pdf.PdfWriter;
+&nbsp;import java.io.FileOutputStream;
+&nbsp;
+<b class="fc">&nbsp;public class PdfReportGenerator {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gera um ficheiro PDF com o resumo da sessão de jogo
+&nbsp;     *
+&nbsp;     * @param session A sessão de jogo atual
+&nbsp;     * @param destPath O caminho onde o ficheiro PDF será gravado
+&nbsp;     */
+&nbsp;    public static void generateReport(GameSession session, String destPath) {
+<b class="fc">&nbsp;        Document document = new Document();</b>
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            PdfWriter.getInstance(document, new FileOutputStream(destPath));</b>
+&nbsp;
+<b class="fc">&nbsp;            document.open();</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;Relatorio de Jogo - Batalha Naval&quot;));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;ID do Jogo: &quot; + session.getGameId()));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;Jogador: &quot; + session.getPlayerName()));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;URL de Callback: &quot; + session.getCallbackUrl()));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;Vencedor: &quot; + (session.getWinner() != null ? session.getWinner() : &quot;A decorrer&quot;)));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;--------------------------------------------------&quot;));</b>
+<b class="fc">&nbsp;            document.add(new Paragraph(&quot;--- Histórico de Jogadas ---&quot;));</b>
+<b class="fc">&nbsp;            for (String move : session.getMoveHistory()) {</b>
+<b class="fc">&nbsp;                document.add(new Paragraph(move));</b>
+&nbsp;            }
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            e.printStackTrace();</b>
+&nbsp;        } finally {
+<b class="pc">&nbsp;            if (document.isOpen()) {</b>
+&nbsp;                document.close();
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-20 00:25</div>
+</div>
+</body>
+</html>
