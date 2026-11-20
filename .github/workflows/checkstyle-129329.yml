@@ -27,4 +27,4 @@ jobs:
           checkstyle_config: checkstyle/checkstyle-129329.xml
           reporter: github-pr-check
           fail_level: any
-          filter_mode: nofilter
+          filter_mode: added
