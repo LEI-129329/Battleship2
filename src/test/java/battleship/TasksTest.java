@@ -1,6 +1,8 @@
 package battleship;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -16,18 +18,35 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for the Tasks command-input helpers.
- *
- * @author luisf
- * Date: 2026-11-16
- * Class under test: battleship.Tasks
+ * Test class for Tasks.
+ * Author: luisf
+ * Date: 2026-11-20 13:16
+ * Cyclomatic Complexity:
+ * - constructor: 1
+ * - menu(): 24
+ * - menuHelp(): 1
+ * - buildFleet(): 4
+ * - readShip(): 1
+ * - readPosition(): 1
+ * - readClassicPosition(): 8
  */
 class TasksTest {
+    private Tasks tasks;
+
+    @BeforeEach
+    void setUp() {
+        tasks = new Tasks();
+    }
+
+    @AfterEach
+    void tearDown() {
+        tasks = null;
+    }
 
     @Test
     @DisplayName("Tasks can be instantiated")
     void constructorCreatesInstance() {
-        assertNotNull(new Tasks(), "Error: expected the public Tasks constructor to create an instance.");
+        assertNotNull(tasks, "Error: expected the public Tasks constructor to create an instance.");
     }
 
     @Test
@@ -62,6 +81,15 @@ class TasksTest {
     }
 
     @Test
+    @DisplayName("menu quit branch is intercepted and reports exit status")
+    void menuQuitExitIsInterceptable() throws Exception {
+        String output = runMenuInChildProcess("desisto\n", false, true);
+
+        assertTrue(output.contains("EXIT_INTERCEPTED_0"),
+                "Error: expected the quit System.exit call to be intercepted with status zero.");
+    }
+
+    @Test
     @DisplayName("menu simulation ends after sinking every ship")
     void menuSimulationEndsAfterFleetIsSunk() throws Exception {
         String output = runMenuInChildProcess("lefrota\n" + fleetInput() + "\nsimula\n", true);
@@ -72,6 +100,20 @@ class TasksTest {
                 () -> assertTrue(output.contains("Maldito sejas"),
                         "Error: expected simulation to display the game-over message.")
         );
+    }
+
+    @Test
+    @DisplayName("menu rajada ends the process after every fleet ship is sunk")
+    void menuRajadaEndsAfterFleetIsSunk() throws Exception {
+        String input = "lefrota\n" + fleetInput()
+                + "\nrajada A1 A3 A5\n"
+                + "rajada A7 A9 C1\n"
+                + "rajada C3 C5 C7\n"
+                + "rajada C9 E1 E3\n";
+        String output = runMenuInChildProcess(input, false, true);
+
+        assertTrue(output.contains("Maldito sejas"),
+                "Error: expected the rajada command to report game over after all ships are sunk.");
     }
 
     @Test
@@ -260,12 +302,33 @@ class TasksTest {
     }
 
     private static String runMenuInChildProcess(String input, boolean simulation) throws Exception {
+        return runMenuInChildProcess(input, simulation, false);
+    }
+
+    private static String runMenuInChildProcess(String input, boolean simulation, boolean interceptExit) throws Exception {
         String javaExecutable = Path.of(System.getProperty("java.home"), "bin", "java").toString();
         String classPath = System.getProperty("java.class.path");
-        ProcessBuilder processBuilder = new ProcessBuilder(javaExecutable, "-cp", classPath,
+        java.util.ArrayList<String> command = new java.util.ArrayList<>();
+        command.add(javaExecutable);
+        if (interceptExit) {
+            command.add("-Djava.security.manager=allow");
+        }
+        Path jacocoAgent = Path.of(System.getProperty("user.home"), ".m2", "repository", "org",
+                "jacoco", "org.jacoco.agent", "0.8.12", "org.jacoco.agent-0.8.12-runtime.jar");
+        if (jacocoAgent.toFile().isFile()) {
+            Path executionData = Path.of(System.getProperty("basedir", "."), "target", "jacoco.exec").toAbsolutePath();
+            command.add("-javaagent:" + jacocoAgent + "=destfile=" + executionData + ",append=true");
+        }
+        command.add("-cp");
+        command.add(classPath);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.command().add(
                 "battleship.TasksTest$MenuProcess");
         if (simulation) {
             processBuilder.command().add("simulation");
+        }
+        if (interceptExit) {
+            processBuilder.command().add("exitprobe");
         }
         Process process = processBuilder.redirectErrorStream(true).start();
         CompletableFuture<byte[]> output = CompletableFuture.supplyAsync(() -> {
@@ -293,10 +356,35 @@ class TasksTest {
     public static final class MenuProcess {
         public static void main(String[] args) {
             new Tasks();
-            if (args.length > 0) {
+            boolean simulation = args.length > 0 && "simulation".equals(args[0]);
+            boolean exitProbe = java.util.Arrays.asList(args).contains("exitprobe");
+            if (simulation) {
                 Thread.currentThread().interrupt();
             }
-            Tasks.menu();
+            if (exitProbe) {
+                System.setSecurityManager(new SecurityManager() {
+                    @Override
+                    public void checkExit(int status) {
+                        throw new ExitProbeException(status);
+                    }
+                });
+                try {
+                    Tasks.menu();
+                } catch (ExitProbeException exit) {
+                    System.out.println("EXIT_INTERCEPTED_" + exit.status);
+                }
+            } else {
+                Tasks.menu();
+            }
+        }
+    }
+
+    private static final class ExitProbeException extends RuntimeException {
+        private final int status;
+
+        private ExitProbeException(int status) {
+            super("Intercepted System.exit(" + status + ")");
+            this.status = status;
         }
     }
 }
