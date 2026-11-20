@@ -198,12 +198,12 @@ public class FleetTest {
 		assertThrows(AssertionError.class, () -> fleet.shipAt(null));
 	}
 
-	// ------------------------------------------------------------ colisionRisk
+	// ------------------------------------------------------------ collisionRisk
 
 	@Test
-	@DisplayName("colisionRisk (privado) deteta navios sobrepostos")
-	void testColisionRisk() throws Exception {
-		var method = Fleet.class.getDeclaredMethod("colisionRisk", IShip.class);
+	@DisplayName("collisionRisk (privado) deteta navios sobrepostos")
+	void testcollisionRisk() throws Exception {
+		var method = Fleet.class.getDeclaredMethod("collisionRisk", IShip.class);
 		method.setAccessible(true);
 
 		IShip ship1 = new Barge(Compass.NORTH, new Position(1, 1));
@@ -216,9 +216,9 @@ public class FleetTest {
 	}
 
 	@Test
-	@DisplayName("colisionRisk (privado) com null lança AssertionError")
-	void testColisionRiskNull() throws Exception {
-		var method = Fleet.class.getDeclaredMethod("colisionRisk", IShip.class);
+	@DisplayName("collisionRisk (privado) com null lança AssertionError")
+	void testcollisionRiskNull() throws Exception {
+		var method = Fleet.class.getDeclaredMethod("collisionRisk", IShip.class);
 		method.setAccessible(true);
 
 		var ex = assertThrows(InvocationTargetException.class,
@@ -233,7 +233,7 @@ public class FleetTest {
 	void testPrintShips() {
 		IShip a = new Barge(Compass.NORTH, new Position(1, 1));
 		IShip b = new Barge(Compass.NORTH, new Position(7, 7));
-		fleet.printShips(List.of(a, b));
+		Fleet.printShips(List.of(a, b));
 
 		String printed = out.toString();
 		assertTrue(printed.contains(a.toString()));
@@ -243,7 +243,7 @@ public class FleetTest {
 	@Test
 	@DisplayName("printShips(null) lança AssertionError")
 	void testPrintShipsNull() {
-		assertThrows(AssertionError.class, () -> fleet.printShips(null));
+		assertThrows(AssertionError.class, () -> Fleet.printShips(null));
 	}
 
 	@Test
