@@ -289,17 +289,17 @@ public abstract class Ship implements IShip
      * @see battleship.IShip#tooCloseTo(battleship.IShip)
      */
     @Override
-    public boolean tooCloseTo(IShip other)
-    {
+	public boolean tooCloseTo(IShip other) {
 		assert other != null;
 
-		Iterator<IPosition> otherPos = other.getPositions().iterator();
-		while (otherPos.hasNext())
-			if (tooCloseTo(otherPos.next()))
+		for (IPosition position : other.getPositions()) {
+			if (tooCloseTo(position)) {
 				return true;
+			}
+		}
 
 		return false;
-    }
+	}
 
 	/**
 	 * Too close to boolean.
@@ -323,12 +323,11 @@ public abstract class Ship implements IShip
 		return false;
     }
 
-	public boolean isInsideBoard()
-	{
-		assert this != null;
-
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
-				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
+	public boolean isInsideBoard() {
+		return getLeftMostPos() >= 0
+				&& getRightMostPos() <= Game.BOARD_SIZE - 1
+				&& getTopMostPos() >= 0
+				&& getBottomMostPos() <= Game.BOARD_SIZE - 1;
 	}
 	/**
 	 * Shoot.
@@ -380,7 +379,7 @@ public abstract class Ship implements IShip
 
 
 	//código de teste para corrigir FeatureEnvy no Qodana
-	public void verificarNavio(Ship s) {
+	public static void verificarNavio(Ship s) {
 		// Inveja de atributos: utiliza múltiplos métodos getters do objeto Ship
 		// em vez de executar lógica própria da classe Game.
 		int tamanho = s.getSize();
