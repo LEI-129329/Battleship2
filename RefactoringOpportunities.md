@@ -13,3 +13,4 @@
 | `Fleet::printAllShips` | Visibilidade inconsistente com os outros métodos `print*` | Change Signature | 101283 |
 | `Caravel::Caravel`, `Carrack::Carrack`, `Frigate::Frigate` | Duplicated Code — repetição da lógica de construção de posições para diferentes orientações | Pull Members Up | 129329 |
 | `Tasks::menu` | Long Method / Switch Statements — método extenso que concentra a interpretação e execução de vários comandos | Extract Method | 129329 |
+| `Galleon::Galleon`, `fillNorth`, `fillSouth`, `fillEast`, `fillWest` | Switch Statements — lógica condicional de construção das posições dependente da orientação | Decompose Conditional | 129329 |
