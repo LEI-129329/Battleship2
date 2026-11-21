@@ -46,8 +46,8 @@ public class GameControllerTest {
 
     private RegistrationRequest registration(String name, String url) {
         RegistrationRequest r = new RegistrationRequest();
-        r.playerName = name;
-        r.callbackUrl = url;
+        r.setPlayerName(name);
+        r.setCallbackUrl(url);
         return r;
     }
 
@@ -55,19 +55,19 @@ public class GameControllerTest {
     private String registerPlayer() {
         ResponseEntity<?> response = controller.register(registration("Ana", UNREACHABLE_CALLBACK));
         assertEquals(200, status(response));
-        return ((RegistrationResponse) response.getBody()).gameId;
+        return ((RegistrationResponse) response.getBody()).getGameId();
     }
 
     private ShotPosition shotPos(String row, int column) {
         ShotPosition sp = new ShotPosition();
-        sp.row = row;
-        sp.column = column;
+        sp.setRow(row);
+        sp.setColumn(column);
         return sp;
     }
 
     private ShotRequest request(List<ShotPosition> shots) {
         ShotRequest r = new ShotRequest();
-        r.shots = shots;
+        r.setShots(shots);
         return r;
     }
 
@@ -82,7 +82,7 @@ public class GameControllerTest {
     /** Pedido com o número certo de tiros em que o primeiro é a posição dada. */
     private ShotRequest requestWithFirst(String row, int column) {
         ShotRequest r = validRequest();
-        r.shots.set(0, shotPos(row, column));
+        r.getShots().set(0, shotPos(row, column));
         return r;
     }
 
@@ -120,9 +120,9 @@ public class GameControllerTest {
         assertEquals(200, status(response));
         assertInstanceOf(RegistrationResponse.class, response.getBody());
         RegistrationResponse body = (RegistrationResponse) response.getBody();
-        assertNotNull(body.gameId);
-        assertEquals("REGISTERED", body.status);
-        assertTrue(body.message.contains("Ana"));
+        assertNotNull(body.getGameId());
+        assertEquals("REGISTERED", body.getStatus());
+        assertTrue(body.getMessage().contains("Ana"));
     }
 
     // ------------------------------------------------------------ receiveShots
@@ -178,10 +178,10 @@ public class GameControllerTest {
 
         assertEquals(200, status(response));
         ShotResponse body = (ShotResponse) response.getBody();
-        assertEquals(Game.NUMBER_SHOTS, body.results.size());
-        assertEquals("ONGOING", body.gameStatus);
-        assertNull(body.winner);
-        assertTrue(body.shipsRemaining > 0);
+        assertEquals(Game.NUMBER_SHOTS, body.getResults().size());
+        assertEquals("ONGOING", body.getGameStatus());
+        assertNull(body.getWinner());
+        assertTrue(body.getShipsRemaining() > 0);
     }
 
     @Test
@@ -190,8 +190,8 @@ public class GameControllerTest {
         ResponseEntity<?> response = controller.receiveShots(registerPlayer(), requestWithFirst("b", 4));
 
         ShotResponse body = (ShotResponse) response.getBody();
-        assertEquals("B", body.results.get(0).row);
-        assertEquals(4, (int) body.results.get(0).column);
+        assertEquals("B", body.getResults().get(0).getRow());
+        assertEquals(4, body.getResults().get(0).getColumn());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class GameControllerTest {
 
         ShotResponse body = (ShotResponse) controller.receiveShots(registerPlayer(), request(shots)).getBody();
 
-        assertEquals("REPEATED", body.results.get(1).outcome);
+        assertEquals("REPEATED", body.getResults().get(1).getOutcome());
     }
 
     @Test
@@ -230,17 +230,17 @@ public class GameControllerTest {
             ResponseEntity<?> response = controller.receiveShots(gameId, request(shots));
             assertEquals(200, status(response));
             last = (ShotResponse) response.getBody();
-            for (ShotResult r : last.results)
-                outcomes.add(r.outcome);
+            for (ShotResult r : last.getResults())
+                outcomes.add(r.getOutcome());
 
-            if ("GAME_OVER".equals(last.gameStatus))
+            if ("GAME_OVER".equals(last.getGameStatus()))
                 break;
         }
 
         assertNotNull(last);
-        assertEquals("GAME_OVER", last.gameStatus);
-        assertEquals("STUDENT_WINS", last.winner);
-        assertEquals(0, (int) last.shipsRemaining);
+        assertEquals("GAME_OVER", last.getGameStatus());
+        assertEquals("STUDENT_WINS", last.getWinner());
+        assertEquals(0, last.getShipsRemaining());
         assertTrue(outcomes.contains("MISS"));
         assertTrue(outcomes.contains("HIT"));
         assertTrue(outcomes.contains("SUNK"));
@@ -254,7 +254,7 @@ public class GameControllerTest {
     void receiveShotsInvalidPosition() {
         ShotResponse body = (ShotResponse) controller
                 .receiveShots(registerPlayer(), requestWithFirst("Z", 5)).getBody();
-        assertEquals("INVALID", body.results.get(0).outcome);
+        assertEquals("INVALID", body.getResults().get(0).getOutcome());
     }
 
     @Test
@@ -271,7 +271,7 @@ public class GameControllerTest {
         try {
             String url = "http://localhost:" + server.getAddress().getPort() + "/callback";
             ResponseEntity<?> reg = controller.register(registration("Ana", url));
-            String gameId = ((RegistrationResponse) reg.getBody()).gameId;
+            String gameId = ((RegistrationResponse) reg.getBody()).getGameId();
 
             assertEquals(200, status(controller.receiveShots(gameId, validRequest())));
         } finally {

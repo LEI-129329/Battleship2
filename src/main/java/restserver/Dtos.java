@@ -26,8 +26,13 @@ public class Dtos {
 	 * }
 	 */
 	public static class RegistrationRequest {
-		public String playerName;
-		public String callbackUrl;
+		private String playerName;
+		private String callbackUrl;
+
+		public String getPlayerName() { return playerName; }
+		public void setPlayerName(String playerName) { this.playerName = playerName; }
+		public String getCallbackUrl() { return callbackUrl; }
+		public void setCallbackUrl(String callbackUrl) { this.callbackUrl = callbackUrl; }
 	}
 
 	/**
@@ -42,10 +47,19 @@ public class Dtos {
 	 * }
 	 */
 	public static class RegistrationResponse {
-		public String gameId;
-		public String status;
-		public int    shotsPerTurn;
-		public String message;
+		private String gameId;
+		private String status;
+		private int shotsPerTurn;
+		private String message;
+
+		public String getGameId() { return gameId; }
+		public void setGameId(String gameId) { this.gameId = gameId; }
+		public String getStatus() { return status; }
+		public void setStatus(String status) { this.status = status; }
+		public int getShotsPerTurn() { return shotsPerTurn; }
+		public void setShotsPerTurn(int shotsPerTurn) { this.shotsPerTurn = shotsPerTurn; }
+		public String getMessage() { return message; }
+		public void setMessage(String message) { this.message = message; }
 	}
 
 	// =========================================================================
@@ -68,13 +82,21 @@ public class Dtos {
 	 * }
 	 */
 	public static class ShotRequest {
-		public List<ShotPosition> shots;
+		private List<ShotPosition> shots;
+
+		public List<ShotPosition> getShots() { return shots; }
+		public void setShots(List<ShotPosition> shots) { this.shots = shots; }
 	}
 
 	/** A single position in classic notation. */
 	public static class ShotPosition {
-		public String row;     // "A" .. "J"
-		public int    column;  // 1  .. 10
+		private String row;     // "A" .. "J"
+		private int column;     // 1  .. 10
+
+		public String getRow() { return row; }
+		public void setRow(String row) { this.row = row; }
+		public int getColumn() { return column; }
+		public void setColumn(int column) { this.column = column; }
 	}
 
 	// =========================================================================
@@ -100,18 +122,36 @@ public class Dtos {
 	 * outcome values:    "MISS"    | "HIT" | "SUNK" | "REPEATED" | "INVALID"
 	 */
 	public static class ShotResponse {
-		public List<ShotResult> results;
-		public int    shipsRemaining;
-		public String gameStatus;
-		public String winner;          // null when ONGOING; "AI_WINS" or "STUDENT_WINS" when GAME_OVER
+		private List<ShotResult> results;
+		private int shipsRemaining;
+		private String gameStatus;
+		private String winner;          // null when ONGOING; "AI_WINS" or "STUDENT_WINS" when GAME_OVER
+
+		public List<ShotResult> getResults() { return results; }
+		public void setResults(List<ShotResult> results) { this.results = results; }
+		public int getShipsRemaining() { return shipsRemaining; }
+		public void setShipsRemaining(int shipsRemaining) { this.shipsRemaining = shipsRemaining; }
+		public String getGameStatus() { return gameStatus; }
+		public void setGameStatus(String gameStatus) { this.gameStatus = gameStatus; }
+		public String getWinner() { return winner; }
+		public void setWinner(String winner) { this.winner = winner; }
 	}
 
 	/** Result for one individual shot. */
 	public static class ShotResult {
-		public String row;
-		public int    column;
-		public String outcome;   // "MISS" | "HIT" | "SUNK" | "REPEATED" | "INVALID"
-		public String shipType;  // null unless outcome is HIT or SUNK
+		private String row;
+		private int column;
+		private String outcome;   // "MISS" | "HIT" | "SUNK" | "REPEATED" | "INVALID"
+		private String shipType;  // null unless outcome is HIT or SUNK
+
+		public String getRow() { return row; }
+		public void setRow(String row) { this.row = row; }
+		public int getColumn() { return column; }
+		public void setColumn(int column) { this.column = column; }
+		public String getOutcome() { return outcome; }
+		public void setOutcome(String outcome) { this.outcome = outcome; }
+		public String getShipType() { return shipType; }
+		public void setShipType(String shipType) { this.shipType = shipType; }
 	}
 
 	// =========================================================================
@@ -125,7 +165,11 @@ public class Dtos {
 	 * { "error": "Game not found: abc-123" }
 	 */
 	public static class ErrorResponse {
-		public String error;
+		private String error;
+
+		public ErrorResponse() {}
 		public ErrorResponse(String error) { this.error = error; }
+		public String getError() { return error; }
+		public void setError(String error) { this.error = error; }
 	}
 }

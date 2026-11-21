@@ -53,12 +53,12 @@ public class CallbackClient {
 
 		// ── 1. Build m2a request body ────────────────────────────────────────
 		ShotRequest dto = new ShotRequest();
-		dto.shots = new ArrayList<>();
+		dto.setShots(new ArrayList<>());
 		for (IPosition pos : aiShots) {
 			ShotPosition sp = new ShotPosition();
-			sp.row    = String.valueOf(pos.getClassicRow());
-			sp.column = pos.getClassicColumn();
-			dto.shots.add(sp);
+			sp.setRow(String.valueOf(pos.getClassicRow()));
+			sp.setColumn(pos.getClassicColumn());
+			dto.getShots().add(sp);
 		}
 
 		String url  = session.getCallbackUrl() + "/game/" + session.getGameId() + "/shots";
@@ -105,7 +105,8 @@ public class CallbackClient {
 		recordAiMove(session.getGame(), aiShots, m2b);
 
 		// ── 5. Check if AI won ────────────────────────────────────────────────
-		if (m2b.shipsRemaining == 0 || "GAME_OVER".equals(m2b.gameStatus)) {
+		if (m2b.getShipsRemaining() == 0
+				|| "GAME_OVER".equals(m2b.getGameStatus())) {
 			session.markAiWins();
 			System.out.printf("[%s] GAME OVER — AI wins against '%s'!%n",
 					session.getGameId(), session.getPlayerName());
@@ -119,15 +120,15 @@ public class CallbackClient {
 	 * This allows AiShotStrategy to see past hits when computing the next move.
 	 */
 	private void recordAiMove(IGame game, List<IPosition> shots, ShotResponse m2b) {
-		if (m2b.results == null) return;
+		if (m2b.getResults() == null) return;
 
 		List<IGame.ShotResult> shotResults = new ArrayList<>();
-		for (int i = 0; i < shots.size() && i < m2b.results.size(); i++) {
-			ShotResult r = m2b.results.get(i);
+		for (int i = 0; i < shots.size() && i < m2b.getResults().size(); i++) {
+			ShotResult r = m2b.getResults().get(i);
 
-			boolean valid    = !"INVALID".equals(r.outcome);
-			boolean repeated = "REPEATED".equals(r.outcome);
-			boolean sunk     = "SUNK".equals(r.outcome);
+			boolean valid    = !"INVALID".equals(r.getOutcome());
+			boolean repeated = "REPEATED".equals(r.getOutcome());
+			boolean sunk     = "SUNK".equals(r.getOutcome());
 
 			// We don't have the actual IShip reference for the student's fleet,
 			// so we pass null for ship — the strategy uses outcome strings instead.

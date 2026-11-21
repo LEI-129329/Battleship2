@@ -116,6 +116,21 @@ public abstract class Ship implements IShip
 		positions = new ArrayList<>();
     }
 
+	protected void fillLinearPositions(IPosition pos)
+	{
+		Compass bearing = getBearing();
+		if (bearing == Compass.EAST || bearing == Compass.WEST)
+		{
+			for (int column = 0; column < getSize(); column++)
+				getPositions().add(new Position(pos.getRow(), pos.getColumn() + column));
+		}
+		else
+		{
+			for (int row = 0; row < getSize(); row++)
+				getPositions().add(new Position(pos.getRow() + row, pos.getColumn()));
+		}
+	}
+
 	/**
 	 * Gets category.
 	 *

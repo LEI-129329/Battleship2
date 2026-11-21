@@ -20,20 +20,14 @@ public class Galleon extends Ship {
 	public Galleon(Compass bearing, IPosition pos) {
 		super("Galeao", bearing, pos, 5);
 
-		switch (bearing) {
-			case NORTH:
-				fillNorth(pos);
-				break;
-			case EAST:
-				fillEast(pos);
-				break;
-			case SOUTH:
-				fillSouth(pos);
-				break;
-			case WEST:
-				fillWest(pos);
-				break;
-		}
+		if (bearing == Compass.NORTH)
+			fillNorth(pos);
+		else if (bearing == Compass.EAST)
+			fillEast(pos);
+		else if (bearing == Compass.SOUTH)
+			fillSouth(pos);
+		else if (bearing == Compass.WEST)
+			fillWest(pos);
 	}
 
 	/**
