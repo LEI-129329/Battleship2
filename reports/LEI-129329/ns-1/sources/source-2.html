@@ -56,26 +56,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    87,5%
+    100%
   </span>
   <span class="absValue">
-    (7/8)
+    (8/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    42,4%
+    84,7%
   </span>
   <span class="absValue">
-    (25/59)
+    (50/59)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    47,7%
+    83,2%
   </span>
   <span class="absValue">
-    (51/107)
+    (89/107)
   </span>
 </td>
 </tr>
@@ -128,65 +128,65 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;	 */
 &nbsp;	public static void menu() {
 &nbsp;
-<b class="nc">&nbsp;		IFleet myFleet = null;</b>
-<b class="nc">&nbsp;		IGame game = null;</b>
-<b class="nc">&nbsp;		menuHelp();</b>
+<b class="fc">&nbsp;		IFleet myFleet = null;</b>
+<b class="fc">&nbsp;		IGame game = null;</b>
+<b class="fc">&nbsp;		menuHelp();</b>
 &nbsp;
-<b class="nc">&nbsp;		System.out.print(&quot;&gt; &quot;);</b>
-<b class="nc">&nbsp;		Scanner in = new Scanner(System.in);</b>
-<b class="nc">&nbsp;		String command = in.next();</b>
-<b class="nc">&nbsp;		while (!command.equals(DESISTIR)) {</b>
+<b class="fc">&nbsp;		System.out.print(&quot;&gt; &quot;);</b>
+<b class="fc">&nbsp;		Scanner in = new Scanner(System.in);</b>
+<b class="fc">&nbsp;		String command = in.next();</b>
+<b class="pc">&nbsp;		while (!command.equals(DESISTIR)) {</b>
 &nbsp;
-<b class="nc">&nbsp;			switch (command) {</b>
+<b class="fc">&nbsp;			switch (command) {</b>
 &nbsp;				case GERAFROTA:
-<b class="nc">&nbsp;					myFleet = Fleet.createRandom();</b>
-<b class="nc">&nbsp;					game = new Game(myFleet);</b>
-<b class="nc">&nbsp;					game.printMyBoard(false, true);</b>
+<b class="fc">&nbsp;					myFleet = Fleet.createRandom();</b>
+<b class="fc">&nbsp;					game = new Game(myFleet);</b>
+<b class="fc">&nbsp;					game.printMyBoard(false, true);</b>
 &nbsp;					break;
 &nbsp;				case LEFROTA:
-<b class="nc">&nbsp;					myFleet = buildFleet(in);</b>
-<b class="nc">&nbsp;					game = new Game(myFleet);</b>
-<b class="nc">&nbsp;					game.printMyBoard(false, true);</b>
+<b class="fc">&nbsp;					myFleet = buildFleet(in);</b>
+<b class="fc">&nbsp;					game = new Game(myFleet);</b>
+<b class="fc">&nbsp;					game.printMyBoard(false, true);</b>
 &nbsp;					break;
 &nbsp;				case STATUS:
-<b class="nc">&nbsp;					if (myFleet != null)</b>
-<b class="nc">&nbsp;						myFleet.printStatus();</b>
+<b class="fc">&nbsp;					if (myFleet != null)</b>
+<b class="fc">&nbsp;						myFleet.printStatus();</b>
 &nbsp;					break;
 &nbsp;				case MAPA:
-<b class="nc">&nbsp;					if (myFleet != null)</b>
-<b class="nc">&nbsp;						game.printMyBoard(false, true);</b>
+<b class="fc">&nbsp;					if (myFleet != null)</b>
+<b class="fc">&nbsp;						game.printMyBoard(false, true);</b>
 &nbsp;					break;
 &nbsp;
 &nbsp;				case MAPACOLORIDO:
-<b class="nc">&nbsp;						if(myFleet != null){</b>
-<b class="nc">&nbsp;							BattleshipGraphicalView.display(&quot;O Meu Tabuleiro&quot;, game.getMyFleet(), game.getAlienMoves(), true);}</b>
+<b class="fc">&nbsp;						if(myFleet != null){</b>
+<b class="fc">&nbsp;							BattleshipGraphicalView.display(&quot;O Meu Tabuleiro&quot;, game.getMyFleet(), game.getAlienMoves(), true);}</b>
 &nbsp;						break;
 &nbsp;				case RAJADA:
-<b class="nc">&nbsp;					if (game != null) {</b>
+<b class="fc">&nbsp;					if (game != null) {</b>
 &nbsp;
 &nbsp;						// Medir o tempo desde a última rajada (ANTES de disparar,
 &nbsp;						// porque o timestamp da última é atualizado dentro do fireShots)
-<b class="nc">&nbsp;						if (game instanceof Game concreteGame) {</b>
-<b class="nc">&nbsp;							long lastTime = concreteGame.getLastSalvoTimeMs();</b>
-<b class="nc">&nbsp;							if (lastTime &gt; 0) {</b>
-<b class="nc">&nbsp;								long intervalMs = System.currentTimeMillis() - lastTime;</b>
-<b class="nc">&nbsp;								System.out.printf(&quot;(Passaram %.2fs desde a última rajada)%n&quot;,</b>
-<b class="nc">&nbsp;										intervalMs / 1000.0);</b>
+<b class="pc">&nbsp;						if (game instanceof Game concreteGame) {</b>
+<b class="fc">&nbsp;							long lastTime = concreteGame.getLastSalvoTimeMs();</b>
+<b class="fc">&nbsp;							if (lastTime &gt; 0) {</b>
+<b class="fc">&nbsp;								long intervalMs = System.currentTimeMillis() - lastTime;</b>
+<b class="fc">&nbsp;								System.out.printf(&quot;(Passaram %.2fs desde a última rajada)%n&quot;,</b>
+<b class="fc">&nbsp;										intervalMs / 1000.0);</b>
 &nbsp;							}
 &nbsp;						}
 &nbsp;
-<b class="nc">&nbsp;						game.readEnemyFire(in);</b>
-<b class="nc">&nbsp;						myFleet.printStatus();</b>
-<b class="nc">&nbsp;						game.printMyBoard(true, false);</b>
+<b class="fc">&nbsp;						game.readEnemyFire(in);</b>
+<b class="fc">&nbsp;						myFleet.printStatus();</b>
+<b class="fc">&nbsp;						game.printMyBoard(true, false);</b>
 &nbsp;
-<b class="nc">&nbsp;						if (game.getRemainingShips() == 0) {</b>
+<b class="pc">&nbsp;						if (game.getRemainingShips() == 0) {</b>
 <b class="nc">&nbsp;							game.over();</b>
 <b class="nc">&nbsp;							System.exit(0);</b>
 &nbsp;						}
 &nbsp;					}
 &nbsp;					break;
 &nbsp;				case SIMULA:
-<b class="nc">&nbsp;					if (game != null) {</b>
+<b class="pc">&nbsp;					if (game != null) {</b>
 <b class="nc">&nbsp;						while (game.getRemainingShips() &gt; 0){</b>
 <b class="nc">&nbsp;							System.out.printf(&quot;Probabilidade de acertar pelo menos um navio nesta rajada: %.1f%%%n&quot;,</b>
 <b class="nc">&nbsp;									game.getProbabilityOfHitInNextRandomBurst() * 100);</b>
@@ -207,17 +207,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;					}
 &nbsp;					break;
 &nbsp;				case TIROS:
-<b class="nc">&nbsp;					if (game != null)</b>
-<b class="nc">&nbsp;						game.printMyBoard(true, true);</b>
+<b class="fc">&nbsp;					if (game != null)</b>
+<b class="fc">&nbsp;						game.printMyBoard(true, true);</b>
 &nbsp;					break;
 &nbsp;				case AJUDA:
-<b class="nc">&nbsp;					menuHelp();</b>
+<b class="fc">&nbsp;					menuHelp();</b>
 &nbsp;					break;
 &nbsp;				default:
-<b class="nc">&nbsp;					System.out.println(&quot;Que comando é esse??? Repete ...&quot;);</b>
+<b class="fc">&nbsp;					System.out.println(&quot;Que comando é esse??? Repete ...&quot;);</b>
 &nbsp;			}
-<b class="nc">&nbsp;			System.out.print(&quot;&gt; &quot;);</b>
-<b class="nc">&nbsp;			command = in.next();</b>
+<b class="fc">&nbsp;			System.out.print(&quot;&gt; &quot;);</b>
+<b class="fc">&nbsp;			command = in.next();</b>
 &nbsp;		}
 <b class="nc">&nbsp;		System.exit(0); //De modo a thread grafica terminar adicionamos este comando.</b>
 <b class="nc">&nbsp;		System.out.println(GOODBYE_MESSAGE);</b>
@@ -362,7 +362,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-11-20 15:33</div>
+    <div style="float:right;">generated on 2026-11-21 12:14</div>
 </div>
 </body>
 </html>
