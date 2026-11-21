@@ -15,3 +15,4 @@
 | `Tasks::menu` | Long Method / Switch Statements — método extenso que concentra a interpretação e execução de vários comandos | Extract Method | 129329 |
 | `Galleon::Galleon`, `fillNorth`, `fillSouth`, `fillEast`, `fillWest` | Switch Statements — lógica condicional de construção das posições dependente da orientação | Decompose Conditional | 129329 |
 | `Game::printShips`, `Game::printBoardShots`, `BattleshipGraphicalView` — métodos correspondentes | Duplicated Code — lógica comum de mapeamento das células do tabuleiro | Extract Class | 129329 |
+| `RegistrationRequest`, `RegistrationResponse`, `ShotRequest`, `ShotPosition`, `ShotResponse`, `ShotResult`, `ErrorResponse` | Data Class / Public Fields — campos públicos que permitem acesso direto aos dados dos DTOs | Encapsulate Fields | 129329 |

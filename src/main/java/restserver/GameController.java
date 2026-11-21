@@ -47,24 +47,24 @@ public class GameController {
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
 
 		// Basic validation
-		if (request.playerName == null || request.playerName.isBlank()) {
+		if (request.getPlayerName() == null || request.getPlayerName().isBlank()) {
 			return error(HttpStatus.BAD_REQUEST, "playerName is required");
 		}
-		if (request.callbackUrl == null || request.callbackUrl.isBlank()) {
+		if (request.getCallbackUrl() == null || request.getCallbackUrl().isBlank()) {
 			return error(HttpStatus.BAD_REQUEST, "callbackUrl is required");
 		}
 
 		// Create session — AI fleet is randomised inside GameSession constructor
-		GameSession session = registry.createSession(request.playerName, request.callbackUrl);
+		GameSession session = registry.createSession(request.getPlayerName(), request.getCallbackUrl());
 
 		RegistrationResponse response = new RegistrationResponse();
-		response.gameId       = session.getGameId();
-		response.status       = "REGISTERED";
-		response.shotsPerTurn = session.getShotsPerTurn();
-		response.message      = "Welcome, " + request.playerName + "! Game ready. You shoot first.";
+		response.setGameId(session.getGameId());
+		response.setStatus("REGISTERED");
+		response.setShotsPerTurn(session.getShotsPerTurn());
+		response.setMessage("Welcome, " + request.getPlayerName() + "! Game ready. You shoot first.");
 
 		System.out.printf("[%s] Registered player '%s' (callback: %s)%n",
-				session.getGameId(), request.playerName, request.callbackUrl);
+				session.getGameId(), request.getPlayerName(), request.getCallbackUrl());
 
 		return ResponseEntity.ok(response);
 	}
@@ -99,19 +99,20 @@ public class GameController {
 		}
 
 		// ── 2. Validate incoming shots ───────────────────────────────────────
-		if (request.shots == null || request.shots.size() != Game.NUMBER_SHOTS) {
+		if (request.getShots() == null || request.getShots().size() != Game.NUMBER_SHOTS) {
 			return error(HttpStatus.BAD_REQUEST,
 					"Exactly " + Game.NUMBER_SHOTS + " shots required per turn");
 		}
 
 		// ── 3. Convert DTO positions → IPosition list ────────────────────────
 		List<IPosition> positions = new ArrayList<>();
-		for (ShotPosition sp : request.shots) {
-			if (sp.row == null || sp.row.isBlank() || sp.column < 1 || sp.column > 10) {
+		for (ShotPosition sp : request.getShots()) {
+			if (sp.getRow() == null || sp.getRow().isBlank()
+					|| sp.getColumn() < 1 || sp.getColumn() > 10) {
 				return error(HttpStatus.BAD_REQUEST,
-						"Invalid position: row='" + sp.row + "' column=" + sp.column);
+						"Invalid position: row='" + sp.getRow() + "' column=" + sp.getColumn());
 			}
-			positions.add(new Position(sp.row.toUpperCase().charAt(0), sp.column));
+			positions.add(new Position(sp.getRow().toUpperCase().charAt(0), sp.getColumn()));
 		}
 
 		// ── 4. Fire student's shots at the AI's fleet (m1b logic) ────────────
@@ -122,8 +123,8 @@ public class GameController {
 		if (game.getRemainingShips() == 0) {
 			PdfReportGenerator.generateReport(session, "target/relatorio-" + session.getGameId() + ".pdf");
 			session.markStudentWins();
-			m1bResponse.gameStatus = "GAME_OVER";
-			m1bResponse.winner     = "STUDENT_WINS";
+			m1bResponse.setGameStatus("GAME_OVER");
+			m1bResponse.setWinner("STUDENT_WINS");
 			System.out.printf("[%s] GAME OVER — student '%s' wins!%n",
 					gameId, session.getPlayerName());
 			return ResponseEntity.ok(m1bResponse);
@@ -163,32 +164,36 @@ public class GameController {
 			alreadyThisTurn.add(pos);
 
 			ShotResult dto  = new ShotResult();
-			dto.row         = String.valueOf(pos.getClassicRow());
-			dto.column      = pos.getClassicColumn();
+			dto.setRow(String.valueOf(pos.getClassicRow()));
+			dto.setColumn(pos.getClassicColumn());
 
 			if (!sr.valid()) {
-				dto.outcome = "INVALID";
+				dto.setOutcome("INVALID");
 			} else if (sr.repeated()) {
-				dto.outcome = "REPEATED";
+				dto.setOutcome("REPEATED");
 			} else if (sr.ship() == null) {
-				dto.outcome = "MISS";
+				dto.setOutcome("MISS");
 			} else if (sr.sunk()) {
-				dto.outcome  = "SUNK";
-				dto.shipType = sr.ship().getCategory();
+				dto.setOutcome("SUNK");
+				dto.setShipType(sr.ship().getCategory());
 			} else {
-				dto.outcome  = "HIT";
-				dto.shipType = sr.ship().getCategory();
+				dto.setOutcome("HIT");
+				dto.setShipType(sr.ship().getCategory());
 			}
-			String moveDescription = String.format("Tiro em %s%d: %s", dto.row, dto.column, dto.outcome);
+			String moveDescription = String.format(
+					"Tiro em %s%d: %s",
+					dto.getRow(),
+					dto.getColumn(),
+					dto.getOutcome());
 			session.addMoveRecord(moveDescription);
 			results.add(dto);
 		}
 
 		ShotResponse response  = new ShotResponse();
-		response.results       = results;
-		response.shipsRemaining = game.getRemainingShips();
-		response.gameStatus    = "ONGOING";
-		response.winner        = null;
+		response.setResults(results);
+		response.setShipsRemaining(game.getRemainingShips());
+		response.setGameStatus("ONGOING");
+		response.setWinner(null);
 		return response;
 	}
 
