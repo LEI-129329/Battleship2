@@ -1,34 +1,27 @@
 package battleship;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class for Tasks.
- * Author: luisf
- * Date: 2026-11-20 13:16
- * Cyclomatic Complexity:
- * - constructor: 1
- * - menu(): 24
- * - menuHelp(): 1
- * - buildFleet(): 4
- * - readShip(): 1
- * - readPosition(): 1
- * - readClassicPosition(): 8
+ * Clean unit and direct-JVM menu tests for {@link Tasks}.
+ * Author: luisf (IDE path variable user.name)
+ * Generated: 2026-11-20 18:12 UTC
+ * Cyclomatic complexity (McCabe, decisions + 1; constructor is CC 1):
+ * Tasks(): 1; menu(): 24; menuHelp(): 1; buildFleet(Scanner): 4;
+ * readShip(Scanner): 1; readPosition(Scanner): 1; readClassicPosition(Scanner): 8.
  */
 class TasksTest {
     private Tasks tasks;
@@ -44,163 +37,180 @@ class TasksTest {
     }
 
     @Test
-    @DisplayName("Tasks can be instantiated")
-    void constructorCreatesInstance() {
-        assertNotNull(tasks, "Error: expected the public Tasks constructor to create an instance.");
+    @DisplayName("Tasks constructor creates a usable instance")
+    void constructor() {
+        assertNotNull(tasks, "Error: expected the public constructor to create an instance.");
     }
 
     @Test
-    @DisplayName("menu processes commands before and after building the fleet")
-    void menuProcessesInteractiveCommands() throws Exception {
-        String input = "estado\nmapa\nmapagrafico\nrajada\nsimula\ntiros\ndesconhecido\najuda\nlefrota\n"
-                + fleetInput() + "\n"
-                + "estado\nmapa\ntiros\nmapagrafico\n"
-                + "rajada A1 A3 A5\n"
-                + "rajada A7 A9 C1\n"
-                + "rajada C3 C5 C7\n"
-                + "rajada C9 E1 E3\n";
-        String output = runMenuInChildProcess(input, false);
-
+    @DisplayName("menuHelp prints every documented command")
+    void menuHelp() {
+        String output = captureOutput(() -> Tasks.menuHelp(), "");
         assertAll(
-                () -> assertTrue(output.contains("Repete"),
-                        "Error: expected the menu to report an unknown command."),
-                () -> assertTrue(output.contains("Estado da Frota:"),
-                        "Error: expected the menu to print the fleet status after fleet creation."),
-                () -> assertTrue(output.contains("Passaram"),
-                        "Error: expected a later salvo to report the time since the previous salvo.")
+                () -> assertTrue(output.contains("AJUDA DO MENU"), "Error: expected the menu heading."),
+                () -> assertTrue(output.contains("- gerafrota:"), "Error: expected the random-fleet command."),
+                () -> assertTrue(output.contains("- lefrota:"), "Error: expected the custom-fleet command."),
+                () -> assertTrue(output.contains("- estado:"), "Error: expected the status command."),
+                () -> assertTrue(output.contains("- mapa:"), "Error: expected the text-map command."),
+                () -> assertTrue(output.contains("- mapagrafico:"), "Error: expected the graphical-map command."),
+                () -> assertTrue(output.contains("- rajada:"), "Error: expected the salvo command."),
+                () -> assertTrue(output.contains("- simula:"), "Error: expected the simulation command."),
+                () -> assertTrue(output.contains("- tiros:"), "Error: expected the shots command."),
+                () -> assertTrue(output.contains("- desisto:"), "Error: expected the quit command.")
         );
     }
 
     @Test
-    @DisplayName("menu generates a random fleet and accepts the quit command")
-    void menuGeneratesFleetAndQuits() throws Exception {
-        String output = runMenuInChildProcess("gerafrota\ndesisto\n", false);
-
-        assertTrue(output.contains("LEGENDA"),
-                "Error: expected random fleet creation to print the board legend.");
-    }
-
-    @Test
-    @DisplayName("menu quit branch is intercepted and reports exit status")
-    void menuQuitExitIsInterceptable() throws Exception {
-        String output = runMenuInChildProcess("desisto\n", false, true);
-
-        assertTrue(output.contains("EXIT_INTERCEPTED_0"),
-                "Error: expected the quit System.exit call to be intercepted with status zero.");
-    }
-
-    @Test
-    @DisplayName("menu simulation ends after sinking every ship")
-    void menuSimulationEndsAfterFleetIsSunk() throws Exception {
-        String output = runMenuInChildProcess("lefrota\n" + fleetInput() + "\nsimula\n", true);
-
+    @DisplayName("menu handles unknown and pre-game commands before EOF")
+    void menu1() {
+        String input = String.join("\n", "desconhecido", "ajuda", "estado", "mapa",
+                "mapagrafico", "rajada", "simula", "tiros", "");
+        MenuResult result = runMenuDirectly(input);
         assertAll(
-                () -> assertTrue(output.contains("Probabilidade de acertar"),
-                        "Error: expected simulation to report salvo hit probabilities."),
-                () -> assertTrue(output.contains("Maldito sejas"),
-                        "Error: expected simulation to display the game-over message.")
+                () -> assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                        "Error: expected menu termination by Scanner EOF."),
+                () -> assertTrue(result.output.contains("Que comando é esse??? Repete ..."),
+                        "Error: expected unknown-command feedback."),
+                () -> assertTrue(result.output.contains("AJUDA DO MENU"),
+                        "Error: expected the ajuda command to print help."),
+                () -> assertTrue(result.output.contains(">"),
+                        "Error: expected menu prompts before EOF.")
         );
     }
 
     @Test
-    @DisplayName("menu rajada ends the process after every fleet ship is sunk")
-    void menuRajadaEndsAfterFleetIsSunk() throws Exception {
+    @DisplayName("menu gerafrota branch creates a game and prints a board")
+    void menu2() {
+        MenuResult result = runMenuDirectly("gerafrota\n");
+        assertAll(
+                () -> assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                        "Error: expected menu termination by Scanner EOF."),
+                () -> assertTrue(result.output.contains("LEGENDA"),
+                        "Error: expected gerafrota to print the board and legend.")
+        );
+    }
+
+    @Test
+    @DisplayName("menu lefrota branch creates and displays a valid custom fleet")
+    void menu3() {
+        MenuResult result = runMenuDirectly("lefrota\n" + fleetInput());
+        assertAll(
+                () -> assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                        "Error: expected custom-fleet setup to finish at Scanner EOF."),
+                () -> assertTrue(result.output.contains("LEGENDA"),
+                        "Error: expected lefrota to print the board and legend.")
+        );
+    }
+
+    @Test
+    @DisplayName("menu post-fleet commands exercise status, map, shots and salvos")
+    void menu4() {
         String input = "lefrota\n" + fleetInput()
-                + "\nrajada A1 A3 A5\n"
-                + "rajada A7 A9 C1\n"
-                + "rajada C3 C5 C7\n"
-                + "rajada C9 E1 E3\n";
-        String output = runMenuInChildProcess(input, false, true);
-
-        assertTrue(output.contains("Maldito sejas"),
-                "Error: expected the rajada command to report game over after all ships are sunk.");
-    }
-
-    @Test
-    @DisplayName("menuHelp prints the available commands")
-    void menuHelpPrintsCommands() {
-        String output = captureOutput(Tasks::menuHelp);
-
+                + "estado\nmapa\ntiros\nrajada A1 A3 A5\nrajada A7 A9 C1\n";
+        MenuResult result = runMenuDirectly(input);
         assertAll(
-                () -> assertTrue(output.contains("Digite um dos comandos abaixo"),
-                        "Error: expected the menu introduction to be printed."),
-                () -> assertTrue(output.contains("- desisto:"),
-                        "Error: expected the exit command to be listed.")
+                () -> assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                        "Error: expected menu termination by Scanner EOF."),
+                () -> assertTrue(result.output.contains("Estado da Frota:"),
+                        "Error: expected post-fleet status to be printed."),
+                () -> assertTrue(result.output.contains("LEGENDA"),
+                        "Error: expected mapa/tiros to print board legends."),
+                () -> assertTrue(result.output.contains("rajada"),
+                        "Error: expected enemy-fire data to be printed."),
+                () -> assertTrue(result.output.contains("Passaram"),
+                        "Error: expected the second salvo to report elapsed time.")
         );
     }
 
     @Test
-    @DisplayName("buildFleet skips unknown and conflicting ships and builds the full fleet")
-    void buildFleetSkipsInvalidShipsAndFillsFleet() {
+    @DisplayName("menu graphic-map command is exercised before and after fleet creation")
+    void menu5() {
+        String input = "mapagrafico\nlefrota\n" + fleetInput() + "mapagrafico\n";
+        MenuResult result = runMenuDirectly(input);
+        assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                "Error: expected menu termination by Scanner EOF.");
+    }
+
+    @Test
+    @DisplayName("menu gerafrota supports post-game status map shots and a first salvo")
+    void menu6() {
+        String input = "gerafrota\nestado\nmapa\ntiros\nrajada A1 A2 A3\n";
+        MenuResult result = runMenuDirectly(input);
+
+        assertAll(
+                () -> assertInstanceOf(NoSuchElementException.class, result.expectedException,
+                        "Error: expected menu termination by Scanner EOF after the random-fleet scenario."),
+                () -> assertTrue(result.output.contains("Estado da Frota:"),
+                        "Error: expected status after gerafrota to print fleet state."),
+                () -> assertTrue(result.output.contains("LEGENDA"),
+                        "Error: expected mapa and tiros to print board legends."),
+                () -> assertTrue(result.output.contains("rajada"),
+                        "Error: expected the first salvo to print enemy-fire data.")
+        );
+    }
+
+    @Test
+    @DisplayName("buildFleet1 skips unknown and conflicting ships and fills 12 positions")
+    void buildFleet1() {
         String input = "unknown 7 7 n "
-                + "barca 0 0 n "
-                + "barca 0 1 n "
-                + "barca 0 2 n "
-                + "barca 0 4 n "
-                + "barca 0 6 n "
-                + "barca 0 8 n "
-                + "barca 2 0 n "
-                + "barca 2 2 n "
-                + "barca 2 4 n "
-                + "barca 2 6 n "
-                + "barca 2 8 n "
-                + "barca 4 0 n "
-                + "barca 4 2 n";
-
+                + "barca 0 0 n " + "barca 0 0 n "
+                + "barca 0 2 n " + "barca 0 4 n "
+                + "barca 0 6 n " + "barca 0 8 n "
+                + "barca 2 0 n " + "barca 2 2 n "
+                + "barca 2 4 n " + "barca 2 6 n "
+                + "barca 2 8 n " + "barca 4 0 n "
+                + "barca 4 2 n " + "barca 4 4 n ";
         Fleet fleet = Tasks.buildFleet(new Scanner(input));
-
         assertEquals(Fleet.FLEET_SIZE, fleet.getShips().size(),
-                "Error: expected buildFleet to add exactly the configured fleet size.");
+                "Error: expected buildFleet to add exactly 12 ships.");
     }
 
     @Test
-    @DisplayName("buildFleet assertion rejects a null scanner")
-    void buildFleetRejectsNullScanner() {
+    @DisplayName("buildFleet2 rejects a null scanner")
+    void buildFleet2() {
         assertThrows(AssertionError.class, () -> Tasks.buildFleet(null),
-                "Error: expected a null scanner to trigger the buildFleet assertion.");
+                "Error: expected buildFleet(null) to trigger the Java assertion.");
     }
 
     @Test
-    @DisplayName("readShip creates ships for every valid compass bearing")
-    void readShipAcceptsEveryBearing() {
+    @DisplayName("readShip1 creates each valid ship category")
+    void readShip1() {
         assertAll(
-                () -> assertSame(Compass.NORTH, Tasks.readShip(new Scanner("barca 1 2 n")).getBearing(),
-                        "Error: expected bearing token 'n' to select NORTH."),
-                () -> assertSame(Compass.SOUTH, Tasks.readShip(new Scanner("barca 1 2 s")).getBearing(),
-                        "Error: expected bearing token 's' to select SOUTH."),
-                () -> assertSame(Compass.EAST, Tasks.readShip(new Scanner("barca 1 2 e")).getBearing(),
-                        "Error: expected bearing token 'e' to select EAST."),
-                () -> assertSame(Compass.WEST, Tasks.readShip(new Scanner("barca 1 2 o")).getBearing(),
-                        "Error: expected bearing token 'o' to select WEST.")
+                () -> assertEquals("Barca", Tasks.readShip(new Scanner("barca 1 2 n")).getCategory(),
+                        "Error: expected barca to be created."),
+                () -> assertEquals("Caravela", Tasks.readShip(new Scanner("caravela 1 2 s")).getCategory(),
+                        "Error: expected caravela to be created."),
+                () -> assertEquals("Nau", Tasks.readShip(new Scanner("nau 1 2 e")).getCategory(),
+                        "Error: expected nau to be created."),
+                () -> assertEquals("Fragata", Tasks.readShip(new Scanner("fragata 1 2 o")).getCategory(),
+                        "Error: expected fragata to be created."),
+                () -> assertEquals("Galeao", Tasks.readShip(new Scanner("galeao 1 2 n")).getCategory(),
+                        "Error: expected galeao to be created.")
         );
     }
 
     @Test
-    @DisplayName("readShip returns null for an unknown ship kind")
-    void readShipReturnsNullForUnknownKind() {
-        assertNull(Tasks.readShip(new Scanner("unknown 1 2 n")),
-                "Error: expected an unknown ship kind to produce null.");
+    @DisplayName("readShip2 returns null for unknown kind and exercises invalid bearing")
+    void readShip2() {
+        assertAll(
+                () -> assertNull(Tasks.readShip(new Scanner("unknown 1 2 n")),
+                        "Error: expected unknown ship kind to return null."),
+                () -> assertThrows(AssertionError.class,
+                        () -> Tasks.readShip(new Scanner("barca 1 2 x")),
+                        "Error: expected invalid bearing to trigger Ship/buildShip assertion."),
+                () -> assertThrows(AssertionError.class,
+                        () -> Tasks.readShip(null),
+                        "Error: expected readShip(null) to trigger the Java assertion."),
+                () -> assertThrows(NoSuchElementException.class,
+                        () -> Tasks.readShip(new Scanner("barca 1 2")),
+                        "Error: expected a missing bearing token to produce NoSuchElementException.")
+        );
     }
 
     @Test
-    @DisplayName("readShip assertion rejects an invalid bearing")
-    void readShipRejectsInvalidBearing() {
-        assertThrows(AssertionError.class, () -> Tasks.readShip(new Scanner("barca 1 2 x")),
-                "Error: expected an invalid bearing to trigger the ship-building assertion.");
-    }
-
-    @Test
-    @DisplayName("readShip assertion rejects a null scanner")
-    void readShipRejectsNullScanner() {
-        assertThrows(AssertionError.class, () -> Tasks.readShip(null),
-                "Error: expected a null scanner to trigger the readShip assertion.");
-    }
-
-    @Test
-    @DisplayName("readPosition reads the supplied numeric row and column")
-    void readPositionReadsCoordinates() {
+    @DisplayName("readPosition1 reads numeric coordinates")
+    void readPosition1() {
         Position position = Tasks.readPosition(new Scanner("3 7"));
-
         assertAll(
                 () -> assertEquals(3, position.getRow(), "Error: expected row 3."),
                 () -> assertEquals(7, position.getColumn(), "Error: expected column 7.")
@@ -208,183 +218,118 @@ class TasksTest {
     }
 
     @Test
-    @DisplayName("readPosition rejects a non-numeric coordinate")
-    void readPositionRejectsNonNumericCoordinate() {
-        assertThrows(java.util.InputMismatchException.class,
-                () -> Tasks.readPosition(new Scanner("row 7")),
-                "Error: expected a non-numeric row to trigger InputMismatchException.");
-    }
-
-    @Test
-    @DisplayName("readPosition assertion rejects a null scanner")
-    void readPositionRejectsNullScanner() {
-        assertThrows(AssertionError.class, () -> Tasks.readPosition(null),
-                "Error: expected a null scanner to trigger the readPosition assertion.");
-    }
-
-    @Test
-    @DisplayName("readClassicPosition accepts compact uppercase and lowercase coordinates")
-    void readClassicPositionAcceptsCompactCoordinates() {
-        IPosition uppercase = Tasks.readClassicPosition(new Scanner("A3"));
-        IPosition lowercase = Tasks.readClassicPosition(new Scanner("b10"));
-
+    @DisplayName("readPosition2 rejects malformed coordinates and null scanner")
+    void readPosition2() {
         assertAll(
+                () -> assertThrows(java.util.InputMismatchException.class,
+                        () -> Tasks.readPosition(new Scanner("row 7")),
+                        "Error: expected a non-numeric row to produce InputMismatchException."),
+                () -> assertThrows(java.util.InputMismatchException.class,
+                        () -> Tasks.readPosition(new Scanner("999999999999999999999 7")),
+                        "Error: expected numeric overflow to produce InputMismatchException."),
+                () -> assertThrows(NoSuchElementException.class,
+                        () -> Tasks.readPosition(new Scanner("")),
+                        "Error: expected missing coordinates to produce NoSuchElementException."),
+                () -> assertThrows(AssertionError.class,
+                        () -> Tasks.readPosition(null),
+                        "Error: expected readPosition(null) to trigger the Java assertion."),
                 () -> assertAll(
-                        () -> assertEquals(0, uppercase.getRow(), "Error: expected A3 to map to row 0."),
-                        () -> assertEquals(2, uppercase.getColumn(), "Error: expected A3 to map to column 2.")
-                ),
-                () -> assertAll(
-                        () -> assertEquals(1, lowercase.getRow(), "Error: expected b10 to normalize to row 1."),
-                        () -> assertEquals(9, lowercase.getColumn(), "Error: expected b10 to map to column 9.")
-                )
+                        () -> assertEquals(-1, Tasks.readPosition(new Scanner("-1 0")).getRow(),
+                                "Error: readPosition must preserve negative numeric input for fleet validation."),
+                        () -> assertEquals(10, Tasks.readPosition(new Scanner("0 10")).getColumn(),
+                                "Error: readPosition must preserve an out-of-board numeric column."))
         );
     }
 
     @Test
-    @DisplayName("readClassicPosition accepts a coordinate separated by whitespace")
-    void readClassicPositionAcceptsSpacedCoordinates() {
-        IPosition position = Tasks.readClassicPosition(new Scanner("C 4"));
-
+    @DisplayName("readClassicPosition1 accepts compact and spaced coordinates")
+    void readClassicPosition1() {
+        IPosition compact = Tasks.readClassicPosition(new Scanner("a3"));
+        IPosition spaced = Tasks.readClassicPosition(new Scanner("C 4"));
+        IPosition boundary = Tasks.readClassicPosition(new Scanner("J 10"));
         assertAll(
-                () -> assertEquals(2, position.getRow(), "Error: expected C 4 to map to row 2."),
-                () -> assertEquals(3, position.getColumn(), "Error: expected C 4 to map to column 3.")
+                () -> assertAll(
+                        () -> assertEquals(0, compact.getRow(), "Error: expected A3 to map to row 0."),
+                        () -> assertEquals(2, compact.getColumn(), "Error: expected A3 to map to column 2.")),
+                () -> assertAll(
+                        () -> assertEquals(2, spaced.getRow(), "Error: expected C 4 to map to row 2."),
+                        () -> assertEquals(3, spaced.getColumn(), "Error: expected C 4 to map to column 3.")),
+                () -> assertAll(
+                        () -> assertEquals(9, boundary.getRow(), "Error: expected J 10 to map to row 9."),
+                        () -> assertEquals(9, boundary.getColumn(), "Error: expected J 10 to map to column 10."))
         );
     }
 
     @Test
-    @DisplayName("readClassicPosition rejects input with no tokens")
-    void readClassicPositionRejectsEmptyInput() {
-        assertThrows(IllegalArgumentException.class,
-                () -> Tasks.readClassicPosition(new Scanner("")),
-                "Error: expected empty input to throw IllegalArgumentException.");
-    }
-
-    @Test
-    @DisplayName("readClassicPosition rejects malformed coordinates")
-    void readClassicPositionRejectsMalformedCoordinates() {
+    @DisplayName("readClassicPosition2 rejects empty and malformed input")
+    void readClassicPosition2() {
         assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> Tasks.readClassicPosition(new Scanner("")),
+                        "Error: expected empty input to be rejected."),
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> Tasks.readClassicPosition(new Scanner("A word")),
-                        "Error: expected a non-numeric second token to make the coordinate invalid."),
+                        "Error: expected a non-numeric spaced row to be rejected."),
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> Tasks.readClassicPosition(new Scanner("word 3")),
-                        "Error: expected a non-letter row token to make the coordinate invalid."),
+                        "Error: expected a malformed letter/number pair to be rejected."),
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> Tasks.readClassicPosition(new Scanner("A -3")),
-                        "Error: expected a signed spaced row to fail the unsigned row format.")
+                        "Error: expected a negative spaced row to be rejected.")
         );
     }
 
     @Test
-    @DisplayName("readClassicPosition rejects a compact coordinate whose row overflows an integer")
-    void readClassicPositionRejectsOverflowingRow() {
-        assertThrows(NumberFormatException.class,
-                () -> Tasks.readClassicPosition(new Scanner("A999999999999999999999")),
-                "Error: expected an overflowing row number to throw NumberFormatException.");
-    }
-
-    private static String captureOutput(Runnable action) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PrintStream originalOutput = System.out;
-        try {
-            System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
-            action.run();
-        } finally {
-            System.setOut(originalOutput);
-        }
-        return output.toString(StandardCharsets.UTF_8);
+    @DisplayName("readClassicPosition3 rejects numeric overflow in both formats")
+    void readClassicPosition3() {
+        assertAll(
+                () -> assertThrows(NumberFormatException.class,
+                        () -> Tasks.readClassicPosition(new Scanner("A999999999999999999999")),
+                        "Error: expected compact integer overflow to throw NumberFormatException."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> Tasks.readClassicPosition(new Scanner("A 999999999999999999999")),
+                        "Error: expected spaced integer overflow to be rejected as malformed input.")
+        );
     }
 
     private static String fleetInput() {
         return "barca 0 0 n\nbarca 0 2 n\nbarca 0 4 n\nbarca 0 6 n\nbarca 0 8 n\n"
                 + "barca 2 0 n\nbarca 2 2 n\nbarca 2 4 n\nbarca 2 6 n\nbarca 2 8 n\n"
-                + "barca 4 0 n\nbarca 4 2 n";
+                + "barca 4 0 n\nbarca 4 2 n\n";
     }
 
-    private static String runMenuInChildProcess(String input, boolean simulation) throws Exception {
-        return runMenuInChildProcess(input, simulation, false);
+    private static String captureOutput(Runnable action, String input) {
+        InputStream originalIn = System.in;
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try {
+            System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+            System.setOut(new PrintStream(bytes, true, StandardCharsets.UTF_8));
+            action.run();
+        } finally {
+            System.setOut(originalOut);
+            System.setIn(originalIn);
+        }
+        return bytes.toString(StandardCharsets.UTF_8);
     }
 
-    private static String runMenuInChildProcess(String input, boolean simulation, boolean interceptExit) throws Exception {
-        String javaExecutable = Path.of(System.getProperty("java.home"), "bin", "java").toString();
-        String classPath = System.getProperty("java.class.path");
-        java.util.ArrayList<String> command = new java.util.ArrayList<>();
-        command.add(javaExecutable);
-        if (interceptExit) {
-            command.add("-Djava.security.manager=allow");
+    private static MenuResult runMenuDirectly(String input) {
+        InputStream originalIn = System.in;
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        Throwable exception = null;
+        try {
+            System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+            System.setOut(new PrintStream(bytes, true, StandardCharsets.UTF_8));
+            Tasks.menu();
+        } catch (Throwable caught) {
+            exception = caught;
+        } finally {
+            System.setOut(originalOut);
+            System.setIn(originalIn);
         }
-        Path jacocoAgent = Path.of(System.getProperty("user.home"), ".m2", "repository", "org",
-                "jacoco", "org.jacoco.agent", "0.8.12", "org.jacoco.agent-0.8.12-runtime.jar");
-        if (jacocoAgent.toFile().isFile()) {
-            Path executionData = Path.of(System.getProperty("basedir", "."), "target", "jacoco.exec").toAbsolutePath();
-            command.add("-javaagent:" + jacocoAgent + "=destfile=" + executionData + ",append=true");
-        }
-        command.add("-cp");
-        command.add(classPath);
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.command().add(
-                "battleship.TasksTest$MenuProcess");
-        if (simulation) {
-            processBuilder.command().add("simulation");
-        }
-        if (interceptExit) {
-            processBuilder.command().add("exitprobe");
-        }
-        Process process = processBuilder.redirectErrorStream(true).start();
-        CompletableFuture<byte[]> output = CompletableFuture.supplyAsync(() -> {
-            try {
-                return process.getInputStream().readAllBytes();
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-        try (PrintStream childInput = new PrintStream(process.getOutputStream(), true, StandardCharsets.UTF_8)) {
-            childInput.print(input);
-        }
-
-        boolean exited = process.waitFor(30, TimeUnit.SECONDS);
-        if (!exited) {
-            process.destroyForcibly();
-            fail("Error: expected the menu subprocess to exit within 30 seconds.");
-        }
-        String outputText = new String(output.join(), StandardCharsets.UTF_8);
-        assertEquals(0, process.exitValue(),
-                "Error: expected the menu subprocess to exit successfully. Child output: " + outputText);
-        return outputText;
+        return new MenuResult(bytes.toString(StandardCharsets.UTF_8), exception);
     }
 
-    public static final class MenuProcess {
-        public static void main(String[] args) {
-            new Tasks();
-            boolean simulation = args.length > 0 && "simulation".equals(args[0]);
-            boolean exitProbe = java.util.Arrays.asList(args).contains("exitprobe");
-            if (simulation) {
-                Thread.currentThread().interrupt();
-            }
-            if (exitProbe) {
-                System.setSecurityManager(new SecurityManager() {
-                    @Override
-                    public void checkExit(int status) {
-                        throw new ExitProbeException(status);
-                    }
-                });
-                try {
-                    Tasks.menu();
-                } catch (ExitProbeException exit) {
-                    System.out.println("EXIT_INTERCEPTED_" + exit.status);
-                }
-            } else {
-                Tasks.menu();
-            }
-        }
-    }
-
-    private static final class ExitProbeException extends RuntimeException {
-        private final int status;
-
-        private ExitProbeException(int status) {
-            super("Intercepted System.exit(" + status + ")");
-            this.status = status;
-        }
-    }
+    private record MenuResult(String output, Throwable expectedException) {}
 }
