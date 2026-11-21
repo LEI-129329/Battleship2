@@ -12,3 +12,4 @@
 | `Fleet::printShips` | Feature Envy — não usa estado da instância | Make Static | 101283 |
 | `Fleet::printAllShips` | Visibilidade inconsistente com os outros métodos `print*` | Change Signature | 101283 |
 | `Caravel::Caravel`, `Carrack::Carrack`, `Frigate::Frigate` | Duplicated Code — repetição da lógica de construção de posições para diferentes orientações | Pull Members Up | 129329 |
+| `Tasks::menu` | Long Method / Switch Statements — método extenso que concentra a interpretação e execução de vários comandos | Extract Method | 129329 |

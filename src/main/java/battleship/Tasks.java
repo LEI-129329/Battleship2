@@ -50,76 +50,33 @@ public class Tasks {
 
 			switch (command) {
 				case GERAFROTA:
-					myFleet = Fleet.createRandom();
-					game = new Game(myFleet);
-					game.printMyBoard(false, true);
+					MenuState randomState = createRandomGame();
+					myFleet = randomState.myFleet();
+					game = randomState.game();
 					break;
 				case LEFROTA:
-					myFleet = buildFleet(in);
-					game = new Game(myFleet);
-					game.printMyBoard(false, true);
+					MenuState customState = createCustomGame(in);
+					myFleet = customState.myFleet();
+					game = customState.game();
 					break;
 				case STATUS:
-					if (myFleet != null)
-						myFleet.printStatus();
+					showFleetStatus(myFleet);
 					break;
 				case MAPA:
-					if (myFleet != null)
-						game.printMyBoard(false, true);
+					showTextMap(myFleet, game);
 					break;
 
 				case MAPACOLORIDO:
-						if(myFleet != null){
-							BattleshipGraphicalView.display("O Meu Tabuleiro", game.getMyFleet(), game.getAlienMoves(), true);}
-						break;
+					showGraphicalMap(myFleet, game);
+					break;
 				case RAJADA:
-					if (game != null) {
-
-						// Medir o tempo desde a última rajada (ANTES de disparar,
-						// porque o timestamp da última é atualizado dentro do fireShots)
-						if (game instanceof Game concreteGame) {
-							long lastTime = concreteGame.getLastSalvoTimeMs();
-							if (lastTime > 0) {
-								long intervalMs = System.currentTimeMillis() - lastTime;
-								System.out.printf("(Passaram %.2fs desde a última rajada)%n",
-										intervalMs / 1000.0);
-							}
-						}
-
-						game.readEnemyFire(in);
-						myFleet.printStatus();
-						game.printMyBoard(true, false);
-
-						if (game.getRemainingShips() == 0) {
-							game.over();
-							System.exit(0);
-						}
-					}
+					processSalvo(myFleet, game, in);
 					break;
 				case SIMULA:
-					if (game != null) {
-						while (game.getRemainingShips() > 0){
-							System.out.printf("Probabilidade de acertar pelo menos um navio nesta rajada: %.1f%%%n",
-									game.getProbabilityOfHitInNextRandomBurst() * 100);
-							game.randomEnemyFire();
-							myFleet.printStatus();
-							game.printMyBoard(true, false);
-							try {
-								Thread.sleep(3000);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt(); // Best practice: restore interrupt status
-							}
-						}
-
-						if (game.getRemainingShips() == 0) {
-							game.over();
-							System.exit(0);
-						}
-					}
+					simulateGame(myFleet, game);
 					break;
 				case TIROS:
-					if (game != null)
-						game.printMyBoard(true, true);
+					showShots(game);
 					break;
 				case AJUDA:
 					menuHelp();
@@ -132,6 +89,110 @@ public class Tasks {
 		}
 		System.exit(0); //De modo a thread grafica terminar adicionamos este comando.
 		System.out.println(GOODBYE_MESSAGE);
+	}
+
+	private record MenuState(IFleet myFleet, IGame game) {}
+
+	private static MenuState createRandomGame()
+	{
+		IFleet myFleet = Fleet.createRandom();
+		IGame game = new Game(myFleet);
+		game.printMyBoard(false, true);
+		return new MenuState(myFleet, game);
+	}
+
+	private static MenuState createCustomGame(Scanner in)
+	{
+		IFleet myFleet = buildFleet(in);
+		IGame game = new Game(myFleet);
+		game.printMyBoard(false, true);
+		return new MenuState(myFleet, game);
+	}
+
+	private static void showFleetStatus(IFleet myFleet)
+	{
+		if (myFleet != null)
+			myFleet.printStatus();
+	}
+
+	private static void showTextMap(IFleet myFleet, IGame game)
+	{
+		if (myFleet != null)
+			game.printMyBoard(false, true);
+	}
+
+	private static void showGraphicalMap(IFleet myFleet, IGame game)
+	{
+		if (myFleet != null)
+		{
+			BattleshipGraphicalView.display(
+					"O Meu Tabuleiro",
+					game.getMyFleet(),
+					game.getAlienMoves(),
+					true);
+		}
+	}
+
+	private static void processSalvo(IFleet myFleet, IGame game, Scanner in)
+	{
+		if (game != null)
+		{
+			if (game instanceof Game concreteGame)
+			{
+				long lastTime = concreteGame.getLastSalvoTimeMs();
+				if (lastTime > 0)
+				{
+					long intervalMs = System.currentTimeMillis() - lastTime;
+					System.out.printf("(Passaram %.2fs desde a última rajada)%n",
+							intervalMs / 1000.0);
+				}
+			}
+
+			game.readEnemyFire(in);
+			myFleet.printStatus();
+			game.printMyBoard(true, false);
+
+			if (game.getRemainingShips() == 0)
+			{
+				game.over();
+				System.exit(0);
+			}
+		}
+	}
+
+	private static void simulateGame(IFleet myFleet, IGame game)
+	{
+		if (game != null)
+		{
+			while (game.getRemainingShips() > 0)
+			{
+				System.out.printf("Probabilidade de acertar pelo menos um navio nesta rajada: %.1f%%%n",
+						game.getProbabilityOfHitInNextRandomBurst() * 100);
+				game.randomEnemyFire();
+				myFleet.printStatus();
+				game.printMyBoard(true, false);
+				try
+				{
+					Thread.sleep(3000);
+				}
+				catch (InterruptedException e)
+				{
+					Thread.currentThread().interrupt();
+				}
+			}
+
+			if (game.getRemainingShips() == 0)
+			{
+				game.over();
+				System.exit(0);
+			}
+		}
+	}
+
+	private static void showShots(IGame game)
+	{
+		if (game != null)
+			game.printMyBoard(true, true);
 	}
 
 	/**
